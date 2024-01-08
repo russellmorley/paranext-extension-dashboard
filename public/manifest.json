@@ -1,0 +1,9 @@
+{
+  "name": "paranext-extension-template-hello-world",
+  "version": "0.0.1",
+  "description": "Extension template for Paranext. Powered by webpack",
+  "author": "Paranext",
+  "license": "MIT",
+  "main": "paranext-extension-template-hello-world.ts",
+  "activationEvents": []
+}
