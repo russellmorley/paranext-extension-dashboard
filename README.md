@@ -1,15 +1,15 @@
-# paranext-extension-template-hello-world
+# paranext-extension-dashboard
 
 Fully function 'hello world' extension template for Paranext
 
 ## Summary
 
-This is a webpack project template pre-configured to build Paranext extensions. It contains a fully functional extension that can be used as learning material and inspiration when building your first extension. Should you already be familiar with developing extension, we suggest using the slimmed down [`paranext-extension-template-hello-world`](https://github.com/paranext/paranext-extension-template-hello-world).
+This is a webpack project template pre-configured to build Paranext extensions. It contains a fully functional extension that can be used as learning material and inspiration when building your first extension. Should you already be familiar with developing extension, we suggest using the slimmed down [`paranext-extension-dashboard`](https://github.com/paranext/paranext-extension-dashboard).
 
 - `package.json` contains information about this extension's npm package. It is required for Paranext to use the extension properly. It is copied into the build folder
 - `src` contains the source code for the extension
   - `src/main.ts` is the main entry file for the extension
-  - `src/types/paranext-extension-template-hello-world.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
+  - `src/types/paranext-extension-dashboard.d.ts` is this extension's types file that defines how other extensions can use this extension through the `papi`. It is copied into the build folder
   - `*.web-view.tsx` files will be treated as React WebViews
   - `*.web-view.html` files are a conventional way to provide HTML WebViews (no special functionality)
 - `public` contains static files that are copied into the build folder
@@ -34,23 +34,23 @@ Run `npm install` to install local and published dependencies
 
 ### Configure extension details
 
-This section is a more compact version of the [`Your first extension` guide](https://github.com/paranext/paranext-extension-template-hello-world/wiki/Your-First-Extension).
+This section is a more compact version of the [`Your first extension` guide](https://github.com/paranext/paranext-extension-dashboard/wiki/Your-First-Extension).
 
 #### Search and replace placeholders
 
-- **Search for:** paranext-extension-template-hello-world
+- **Search for:** paranext-extension-dashboard
   **Replace with:** your-extension-name
-- **Search for:** Extension Template Hello World
+- **Search for:** Extension for Dashboard
   **Replace with:** Your Extension
   (Be sure to match case)
 
 #### Filenames
 
-You need to change the filename of the `.d.ts` file, which is located in `/src/types` and referenced in the `package.json` “types” field. See more information on the [.d.ts files](https://github.com/paranext/paranext-extension-template-hello-world/wiki/Extension-Anatomy#type-declaration-files-dts).
+You need to change the filename of the `.d.ts` file, which is located in `/src/types` and referenced in the `package.json` “types” field. See more information on the [.d.ts files](https://github.com/paranext/paranext-extension-dashboard/wiki/Extension-Anatomy#type-declaration-files-dts).
 
 #### Manifest
 
-The `manifest.json` and `package.json` files makeup your extension manifest. Add your details in these two files based on your extension name and what you renamed the files described in 1 and 2. See more information on the `manifest.json` and `package.json` files in [Extension Anatomy](https://github.com/paranext/paranext-extension-template-hello-world/wiki/Extension-Anatomy#extension-manifest).
+The `manifest.json` and `package.json` files makeup your extension manifest. Add your details in these two files based on your extension name and what you renamed the files described in 1 and 2. See more information on the `manifest.json` and `package.json` files in [Extension Anatomy](https://github.com/paranext/paranext-extension-dashboard/wiki/Extension-Anatomy#extension-manifest).
 
 #### Webpack
 
@@ -84,7 +84,7 @@ To package your extension into a zip file for distribution:
 
 ## To update
 
-The `paranext-extension-template-hello-world` will be updated regularly, and will sometimes receive updates that help with breaking changes on `paranext-core`. So we recommend you periodically update your extension by merging the latest template updates into your extension. You can do so by following [these instructions](https://github.com/paranext/paranext-extension-template/wiki/Merging-Template-Changes-into-Your-Extension).
+The `paranext-extension-dashboard` will be updated regularly, and will sometimes receive updates that help with breaking changes on `paranext-core`. So we recommend you periodically update your extension by merging the latest template updates into your extension. You can do so by following [these instructions](https://github.com/paranext/paranext-extension-template/wiki/Merging-Template-Changes-into-Your-Extension).
 
 ## Special features of the template
 

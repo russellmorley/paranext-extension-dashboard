@@ -13,11 +13,12 @@ import type {
   DoStuffEvent,
   ExtensionVerseDataTypes,
   ExtensionVerseSetData,
-} from 'paranext-extension-template-hello-world';
-import extensionTemplateReact from './extension-template.web-view?inline';
-import extensionTemplateReact2 from './extension-template-2.web-view?inline';
-import extensionTemplateReactStyles from './extension-template.web-view.scss?inline';
-import extensionTemplateHtml from './extension-template-html.web-view.html?inline';
+} from 'paranext-extension-dashboard';
+import https from 'https';
+import extensionDashboardReact from './extension-dashboard.web-view?inline';
+import extensionDashboardReact2 from './extension-dashboard-2.web-view?inline';
+import extensionDashboardReactStyles from './extension-dashboard.web-view.scss?inline';
+import extensionDashboardHtml from './extension-dashboard-html.web-view.html?inline';
 
 // eslint-disable-next-line
 console.log(process.env.NODE_ENV);
@@ -277,7 +278,7 @@ class QuickVerseDataProviderEngine
   }
 }
 
-const htmlWebViewType = 'paranextExtensionTemplate.html';
+const htmlWebViewType = 'paranextExtensionDashboard.html';
 
 /**
  * Simple web view provider that provides sample html web views when papi requests them
@@ -290,14 +291,14 @@ const htmlWebViewProvider: IWebViewProvider = {
       );
     return {
       ...savedWebView,
-      title: 'Extension Template Hello World HTML',
+      title: 'Extension for Dashboard HTML',
       contentType: 'html' as WebViewContentType.HTML,
-      content: extensionTemplateHtml,
+      content: extensionDashboardHtml,
     };
   },
 };
 
-const reactWebViewType = 'paranextExtensionTemplate.react';
+const reactWebViewType = 'paranextExtensionDashboard.react';
 
 /**
  * Simple web view provider that provides React web views when papi requests them
@@ -310,14 +311,14 @@ const reactWebViewProvider: IWebViewProvider = {
       );
     return {
       ...savedWebView,
-      title: 'Extension Template Hello World React',
-      content: extensionTemplateReact,
-      styles: extensionTemplateReactStyles,
+      title: 'Extension for Dashboard React',
+      content: extensionDashboardReact,
+      styles: extensionDashboardReactStyles,
     };
   },
 };
 
-const reactWebViewType2 = 'paranextExtensionTemplate.react2';
+const reactWebViewType2 = 'paranextExtensionDashboard.react2';
 
 /**
  * Simple web view provider that provides React web views when papi requests them
@@ -330,9 +331,9 @@ const reactWebViewProvider2: IWebViewProvider = {
       );
     return {
       ...savedWebView,
-      title: 'Extension Template Hello World React 2',
-      content: extensionTemplateReact2,
-      styles: extensionTemplateReactStyles,
+      title: 'Extension for Dashboard React 2',
+      content: extensionDashboardReact2,
+      styles: extensionDashboardReactStyles,
     };
   },
 };
@@ -378,12 +379,12 @@ export async function activate(context: ExecutionActivationContext) {
 
   // Emitter to tell subscribers how many times we have done stuff
   const onDoStuffEmitter = papi.network.createNetworkEventEmitter<DoStuffEvent>(
-    'extensionTemplateHelloWorld.doStuff',
+    'extensionDashboard.doStuff',
   );
 
   let doStuffCount = 0;
   const doStuffCommandPromise = papi.commands.registerCommand(
-    'extensionTemplateHelloWorld.doStuff',
+    'extensionDashboard.doStuff',
     (message: string) => {
       doStuffCount += 1;
       // Inform subscribers of the update

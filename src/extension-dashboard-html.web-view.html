@@ -8,7 +8,7 @@
     </style>
   </head>
   <body>
-    <div class="title">Extension Template Hello World HTML</div>
+    <div class="title">Extension for Dashboard HTML</div>
     <div>
       <input id="name-input" value="Bill" />
       <button id="greetings-button" type="button">Greet</button>
@@ -36,8 +36,8 @@
     <div id="bill-any-age-update-count">Any Age Updates (via Bill): 0</div>
     <div id="bill-age-update-count">Bill Age Updates: 0</div>
     <script>
-      const papi = require('papi-frontend');
-      const { logger } = require('papi-frontend');
+      const papi = require('@papi/frontend');
+      const { logger } = require('@papi/frontend');
 
       function print(input) {
         logger.info(input);

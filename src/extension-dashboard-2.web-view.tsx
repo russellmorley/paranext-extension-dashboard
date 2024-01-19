@@ -1,14 +1,14 @@
 import papi, { logger } from '@papi/frontend';
 import { useData, useDataProvider, useEvent } from '@papi/frontend/react';
 import { useCallback, useState } from 'react';
-import type { DoStuffEvent } from 'paranext-extension-template-hello-world';
+import type { DoStuffEvent } from 'paranext-extension-dashboard';
 import { Button } from 'papi-components';
 
-globalThis.webViewComponent = function ExtensionTemplate() {
+globalThis.webViewComponent = function ExtensionTemplate2() {
   const [clicks, setClicks] = useState(0);
 
   useEvent<DoStuffEvent>(
-    'extensionTemplateHelloWorld.doStuff',
+    'extensionDashboard.doStuff',
     useCallback(({ count }) => setClicks(count), []),
   );
 
@@ -26,7 +26,7 @@ globalThis.webViewComponent = function ExtensionTemplate() {
   return (
     <>
       <div className="title">
-        Extension Template Hello World <span className="framework">React</span>
+        Extension for Dashboard <span className="framework">React 2</span>
       </div>
       <div>{latestExtensionVerseText}</div>
       <div>{latestQuickVerseText}</div>
@@ -35,12 +35,12 @@ globalThis.webViewComponent = function ExtensionTemplate() {
           onClick={async () => {
             const start = performance.now();
             const result = await papi.commands.sendCommand(
-              'extensionTemplateHelloWorld.doStuff',
-              'Extension Template Hello World React Component',
+              'extensionDashboard.doStuff',
+              'Extension for Dashboard React Component',
             );
             setClicks(clicks + 1);
             logger.info(
-              `command:extensionTemplateHelloWorld.doStuff '${result.response}' took ${
+              `command:extensionDashboard.doStuff '${result.response}' took ${
                 performance.now() - start
               } ms`,
             );

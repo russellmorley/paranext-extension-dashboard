@@ -1,4 +1,4 @@
-declare module 'paranext-extension-template-hello-world' {
+declare module 'paranext-extension-dashboard' {
   import { DataProviderDataType, IDataProvider } from '@papi/core';
 
   export type ExtensionVerseSetData = string | { text: string; isHeresy: boolean };
@@ -19,7 +19,7 @@ declare module 'paranext-extension-template-hello-world' {
 }
 
 declare module 'papi-shared-types' {
-  import type { ExtensionVerseDataProvider } from 'paranext-extension-template-hello-world';
+  import type { ExtensionVerseDataProvider } from 'paranext-extension-dashboard';
 
   export interface CommandHandlers {
     'extensionTemplateHelloWorld.doStuff': (message: string) => {

@@ -1,9 +1,9 @@
 {
-  "name": "paranext-extension-template-hello-world",
+  "name": "paranext-extension-dashboard",
   "version": "0.0.1",
-  "description": "Extension template for Paranext. Powered by webpack",
-  "author": "Paranext",
+  "description": "Extension template for Dashboard.",
+  "author": "Compass Point, Inc.",
   "license": "MIT",
-  "main": "paranext-extension-template-hello-world.ts",
+  "main": "paranext-extension-dashboard.ts",
   "activationEvents": []
 }
