@@ -460,7 +460,7 @@ export async function activate(context: ExecutionActivationContext) {
   const doDashboardVerseChangePromise = papi.commands.registerCommand(
     'platform.dashboardVerseChange',
     (verseRefString: string, verseOffsetIncluded: number) => {
-      logger.info(`DashboardVerseRef: {verseRefString}; offset: {verseOffsetIncluded}`);
+      logger.info(`DashboardVerseRef: ${verseRefString}; offset: ${verseOffsetIncluded}`);
       // Inform subscribers of the verse change
       onDashboardVerseChangeEmitter.emit({
         verseRefString,
