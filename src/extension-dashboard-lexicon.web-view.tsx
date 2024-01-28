@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import type { DoStuffEvent } from 'paranext-extension-dashboard';
 import { Button } from 'papi-components';
 
-globalThis.webViewComponent = function ExtensionTemplate() {
+globalThis.webViewComponent = function ExtensionTemplate2() {
   const [clicks, setClicks] = useState(0);
 
   useEvent<DoStuffEvent>(
@@ -23,16 +23,13 @@ globalThis.webViewComponent = function ExtensionTemplate() {
     'Loading latest Scripture text from extension template...',
   );
 
-  const stateparam1: string = window.getWebViewState('stateparam1') ?? '<not set>';
-
   return (
     <>
       <div className="title">
-        Extension for Dashboard <span className="framework">React</span>
+        Extension for Dashboard <span className="framework">React 2</span>
       </div>
       <div>{latestExtensionVerseText}</div>
       <div>{latestQuickVerseText}</div>
-      <div>stateparam1: {stateparam1}</div>
       <div>
         <Button
           onClick={async () => {
@@ -49,7 +46,7 @@ globalThis.webViewComponent = function ExtensionTemplate() {
             );
           }}
         >
-          Hi {clicks}
+          I've been clicked {clicks} time(s)!
         </Button>
       </div>
     </>

@@ -13,13 +13,21 @@ import type {
   DoStuffEvent,
   ExtensionVerseDataTypes,
   ExtensionVerseSetData,
+  DashboardVerseChangeEvent,
+  ParanextVerseChangeEvent,
 } from 'paranext-extension-dashboard';
 import https from 'https';
-import extensionDashboardReact from './extension-dashboard.web-view?inline';
+// import extensionDashboardReact from './extension-dashboard.web-view?inline';
 import extensionDashboardReact2 from './extension-dashboard-2.web-view?inline';
-import extensionDashboardReactStyles from './extension-dashboard.web-view.scss?inline';
+import extensionDashboardWebviewStyles from './extension-dashboard.web-view.scss?inline';
+// import extensionDashboardReactStyles from './extension-dashboard.web-view.scss?inline';
 import extensionDashboardHtml from './extension-dashboard-html.web-view.html?inline';
 
+import extensionDashboardAquaAnalysis from './extension-dashboard-aguaanalysis.web-view?inline';
+import extensionDashboardAquaAnalysisStyles from './extension-dashboard.web-view-aquaanalysis.scss?inline';
+
+import extensionDashboardLexicon from './extension-dashboard-lexicon.web-view?inline';
+import extensionDashboardLexiconStyles from './extension-dashboard.web-view-lexicon.scss?inline';
 // eslint-disable-next-line
 console.log(process.env.NODE_ENV);
 
@@ -298,25 +306,25 @@ const htmlWebViewProvider: IWebViewProvider = {
   },
 };
 
-const reactWebViewType = 'paranextExtensionDashboard.react';
+// const reactWebViewType = 'paranextExtensionDashboard.react';
 
-/**
- * Simple web view provider that provides React web views when papi requests them
- */
-const reactWebViewProvider: IWebViewProvider = {
-  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
-    if (savedWebView.webViewType !== reactWebViewType)
-      throw new Error(
-        `${reactWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
-      );
-    return {
-      ...savedWebView,
-      title: 'Extension for Dashboard React',
-      content: extensionDashboardReact,
-      styles: extensionDashboardReactStyles,
-    };
-  },
-};
+// /**
+//  * Simple web view provider that provides React web views when papi requests them
+//  */
+// const reactWebViewProvider: IWebViewProvider = {
+//   async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
+//     if (savedWebView.webViewType !== reactWebViewType)
+//       throw new Error(
+//         `${reactWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
+//       );
+//     return {
+//       ...savedWebView,
+//       title: 'Extension for Dashboard React',
+//       content: extensionDashboardReact,
+//       styles: extensionDashboardReactStyles,
+//     };
+//   },
+// };
 
 const reactWebViewType2 = 'paranextExtensionDashboard.react2';
 
@@ -333,7 +341,45 @@ const reactWebViewProvider2: IWebViewProvider = {
       ...savedWebView,
       title: 'Extension for Dashboard React 2',
       content: extensionDashboardReact2,
-      styles: extensionDashboardReactStyles,
+      styles: extensionDashboardWebviewStyles,
+    };
+  },
+};
+
+const aquaAnalysisWebViewType = 'paranextExtensionDashboard.aquaanalysis';
+/**
+ * Simple web view provider that provides React web views when papi requests them
+ */
+const aquaAnalysisWebViewProvider: IWebViewProvider = {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
+    if (savedWebView.webViewType !== aquaAnalysisWebViewType)
+      throw new Error(
+        `${aquaAnalysisWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
+      );
+    return {
+      ...savedWebView,
+      title: 'Extension for Dashboard React 2',
+      content: extensionDashboardAquaAnalysis,
+      styles: extensionDashboardAquaAnalysisStyles,
+    };
+  },
+};
+
+const lexiconWebViewType = 'paranextExtensionDashboard.lexicon';
+/**
+ * Simple web view provider that provides React web views when papi requests them
+ */
+const lexiconWebViewProvider: IWebViewProvider = {
+  async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
+    if (savedWebView.webViewType !== lexiconWebViewType)
+      throw new Error(
+        `${lexiconWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
+      );
+    return {
+      ...savedWebView,
+      title: 'Extension for Dashboard React 2',
+      content: extensionDashboardLexicon,
+      styles: extensionDashboardLexiconStyles,
     };
   },
 };
@@ -367,14 +413,24 @@ export async function activate(context: ExecutionActivationContext) {
     htmlWebViewProvider,
   );
 
-  const reactWebViewProviderPromise = papi.webViewProviders.register(
-    reactWebViewType,
-    reactWebViewProvider,
-  );
+  // const reactWebViewProviderPromise = papi.webViewProviders.register(
+  //   reactWebViewType,
+  //   reactWebViewProvider,
+  // );
 
   const reactWebViewProvider2Promise = papi.webViewProviders.register(
     reactWebViewType2,
     reactWebViewProvider2,
+  );
+
+  const aquaAnalysisWebViewProviderPromise = papi.webViewProviders.register(
+    aquaAnalysisWebViewType,
+    aquaAnalysisWebViewProvider,
+  );
+
+  const lexiconWebViewProviderPromise = papi.webViewProviders.register(
+    lexiconWebViewType,
+    lexiconWebViewProvider,
   );
 
   // Emitter to tell subscribers how many times we have done stuff
@@ -398,6 +454,35 @@ export async function activate(context: ExecutionActivationContext) {
     },
   );
 
+  const onDashboardVerseChangeEmitter =
+    papi.network.createNetworkEventEmitter<DashboardVerseChangeEvent>('platform.dashboardVerseChange');
+
+  const doDashboardVerseChangePromise = papi.commands.registerCommand(
+    'platform.dashboardVerseChange',
+    (verseRefString: string, verseOffsetIncluded: number) => {
+      logger.info(`DashboardVerseRef: {verseRefString}; offset: {verseOffsetIncluded}`);
+      // Inform subscribers of the verse change
+      onDashboardVerseChangeEmitter.emit({
+        verseRefString,
+        verseOffsetIncluded,
+      });
+    },
+  );
+
+  const onParanextVerseChangeEmitter =
+    papi.network.createNetworkEventEmitter<ParanextVerseChangeEvent>('platform.paranextVerseChange');
+
+  const doParanextVerseChangePromise = papi.commands.registerCommand(
+    'platform.paranextVerseChange',
+    (verseRefString: string, verseOffsetIncluded: number) => {
+      logger.info(`ParanextVerseRef: {verseRefString}; offset: {verseOffsetIncluded}`);
+      // Inform subscribers of the verse change
+      onParanextVerseChangeEmitter.emit({
+        verseRefString,
+        verseOffsetIncluded,
+      });
+    },
+  );
   // Create WebViews or get an existing WebView if one already exists for this type
   // Note: here, we are using `existingId: '?'` to indicate we do not want to create a new WebView
   // if one already exists. The WebView that already exists could have been created by anyone
@@ -405,17 +490,25 @@ export async function activate(context: ExecutionActivationContext) {
   // example of keeping an existing WebView that was specifically created by
   // `paranext-core's hello-someone`.
   papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: '?' });
-  papi.webViews.getWebView(reactWebViewType, undefined, { existingId: '?' });
+  // papi.webViews.getWebView(reactWebViewType, undefined, { existingId: '?' });
   papi.webViews.getWebView(reactWebViewType2, undefined, { existingId: '?' });
+  papi.webViews.getWebView(aquaAnalysisWebViewType, undefined, { existingId: '?' });
+  papi.webViews.getWebView(lexiconWebViewType, undefined, { existingId: '?' });
 
   // Await the data provider promise at the end so we don't hold everything else up
   context.registrations.add(
     await quickVerseDataProviderPromise,
     await htmlWebViewProviderPromise,
-    await reactWebViewProviderPromise,
+    // await reactWebViewProviderPromise,
     await reactWebViewProvider2Promise,
+    await aquaAnalysisWebViewProviderPromise,
+    await lexiconWebViewProviderPromise,
     onDoStuffEmitter,
     await doStuffCommandPromise,
+    onDashboardVerseChangeEmitter,
+    onParanextVerseChangeEmitter,
+    await doDashboardVerseChangePromise,
+    await doParanextVerseChangePromise,
   );
 
   logger.info('Extension template is finished activating!');

@@ -15,6 +15,21 @@ declare module 'paranext-extension-dashboard' {
     count: number;
   };
 
+  /** Network event that informs subscribers when the platform's verse has changed */
+  export type DashboardVerseChangeEvent = {
+    /** Scripture.VerseRef in string form */
+    verseRefString: string;
+    /** The number of verses before and after verseRef, within verseRef's chapter,
+     * that are displaying */
+    verseOffsetIncluded: number;
+  };
+  export type ParanextVerseChangeEvent = {
+    /** Scripture.VerseRef in string form */
+    verseRefString: string;
+    /** The number of verses before and after verseRef, within verseRef's chapter,
+     * that are displaying */
+    verseOffsetIncluded: number;
+  };
   export type ExtensionVerseDataProvider = IDataProvider<ExtensionVerseDataTypes>;
 }
 

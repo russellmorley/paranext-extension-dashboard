@@ -1,9 +1,16 @@
-@import './extension-dashboard.web-view-2';
-
 .title {
-  color: blue;
+  color: black;
 
-  .framework {
-    font-weight: 900;
+  .medium {
+    font-size: medium;
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .small {
+    font-size: x-small;
+  }
   }
 }
+
