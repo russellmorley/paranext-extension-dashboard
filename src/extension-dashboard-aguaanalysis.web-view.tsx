@@ -134,8 +134,8 @@ globalThis.webViewComponent = function Dashboard() {
       {/* <div>{latestExtensionVerseText}</div>
       <div>{latestQuickVerseText}</div> */}
       {/* <div>AssessmentId: {assessmentId}</div>
-      <div>VersionId: {versionId}</div>
-      <div>Dashboard's Verse: {dashboardVerseRef}</div> */}
+      <div>VersionId: {versionId}</div> */}
+      <div>Dashboard's Verse: {dashboardVerseRef}</div>
       <div>
         <Chart options={chartOptions} series={results} type="heatmap" height={200} />
       </div>
@@ -166,14 +166,33 @@ globalThis.webViewComponent = function Dashboard() {
                 'GEN 100:2000',
                 1,
               );
+            }}
+          >
+          Tell Dashboard Paranext's verse changed
+          </Button>
+          <Button
+            onClick={async () => {
+              const request = {
+                jsonrpc: "2.0",
+                id: 3,
+                method: "GetCorpus",
+                params: "params"
+              }
+              const start = performance.now();
+              const result = await await papi.commands.sendCommand(
+                'platform.dashboardServiceRequest',
+                //'REQUEST_FROM_AQUAANALYSISWEBVIEW'
+                JSON.stringify(request)
+              );
+              logger.info("boo");
               logger.info(
-                `platform.paranextVerseChange '${result.response}' took ${
+                `platform.dashboardServiceRequest' ${result}' took ${
                   performance.now() - start
                 } ms`,
               );
             }}
           >
-          Tell Dashboard Paranext's verse changed
+          Send command to Dashboard
           </Button>
         </span>
       </div>

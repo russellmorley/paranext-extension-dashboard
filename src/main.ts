@@ -18,10 +18,12 @@ import type {
 } from 'paranext-extension-dashboard';
 import https from 'https';
 // import extensionDashboardReact from './extension-dashboard.web-view?inline';
-import extensionDashboardReact2 from './extension-dashboard-2.web-view?inline';
-import extensionDashboardWebviewStyles from './extension-dashboard.web-view.scss?inline';
+// import extensionDashboardReact2 from './extension-dashboard-2.web-view?inline';
+// import extensionDashboardWebviewStyles from './extension-dashboard.web-view.scss?inline';
 // import extensionDashboardReactStyles from './extension-dashboard.web-view.scss?inline';
 import extensionDashboardHtml from './extension-dashboard-html.web-view.html?inline';
+
+import extensionDashboardServices from './extension-dashboard-services.web-view?inline';
 
 import extensionDashboardAquaAnalysis from './extension-dashboard-aguaanalysis.web-view?inline';
 import extensionDashboardAquaAnalysisStyles from './extension-dashboard.web-view-aquaanalysis.scss?inline';
@@ -326,22 +328,40 @@ const htmlWebViewProvider: IWebViewProvider = {
 //   },
 // };
 
-const reactWebViewType2 = 'paranextExtensionDashboard.react2';
+// const reactWebViewType2 = 'paranextExtensionDashboard.react2';
 
 /**
  * Simple web view provider that provides React web views when papi requests them
  */
-const reactWebViewProvider2: IWebViewProvider = {
+// const reactWebViewProvider2: IWebViewProvider = {
+//   async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
+//     if (savedWebView.webViewType !== reactWebViewType2)
+//       throw new Error(
+//         `${reactWebViewType2} provider received request to provide a ${savedWebView.webViewType} web view`,
+//       );
+//     return {
+//       ...savedWebView,
+//       title: 'Extension for Dashboard React 2',
+//       content: extensionDashboardReact2,
+//       styles: extensionDashboardWebviewStyles,
+//     };
+//   },
+// };
+
+const servicesWebViewType = 'paranextExtensionDashboard.services';
+/**
+ * Simple web view provider that provides React web views when papi requests them
+ */
+const servicesWebViewProvider: IWebViewProvider = {
   async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
-    if (savedWebView.webViewType !== reactWebViewType2)
+    if (savedWebView.webViewType !== servicesWebViewType)
       throw new Error(
-        `${reactWebViewType2} provider received request to provide a ${savedWebView.webViewType} web view`,
+        `${servicesWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
       );
     return {
       ...savedWebView,
-      title: 'Extension for Dashboard React 2',
-      content: extensionDashboardReact2,
-      styles: extensionDashboardWebviewStyles,
+      title: 'Headless webview for Dashboard Services (API)',
+      content: extensionDashboardServices,
     };
   },
 };
@@ -418,9 +438,14 @@ export async function activate(context: ExecutionActivationContext) {
   //   reactWebViewProvider,
   // );
 
-  const reactWebViewProvider2Promise = papi.webViewProviders.register(
-    reactWebViewType2,
-    reactWebViewProvider2,
+  // const reactWebViewProvider2Promise = papi.webViewProviders.register(
+  //   reactWebViewType2,
+  //   reactWebViewProvider2,
+  // );
+
+  const servicesWebViewProviderPromise = papi.webViewProviders.register(
+    servicesWebViewType,
+    servicesWebViewProvider,
   );
 
   const aquaAnalysisWebViewProviderPromise = papi.webViewProviders.register(
@@ -491,7 +516,8 @@ export async function activate(context: ExecutionActivationContext) {
   // `paranext-core's hello-someone`.
   papi.webViews.getWebView(htmlWebViewType, undefined, { existingId: '?' });
   // papi.webViews.getWebView(reactWebViewType, undefined, { existingId: '?' });
-  papi.webViews.getWebView(reactWebViewType2, undefined, { existingId: '?' });
+  // papi.webViews.getWebView(reactWebViewType2, undefined, { existingId: '?' });
+  papi.webViews.getWebView(servicesWebViewType, undefined, {existingId: '?'});
   papi.webViews.getWebView(aquaAnalysisWebViewType, undefined, { existingId: '?' });
   papi.webViews.getWebView(lexiconWebViewType, undefined, { existingId: '?' });
 
@@ -500,7 +526,8 @@ export async function activate(context: ExecutionActivationContext) {
     await quickVerseDataProviderPromise,
     await htmlWebViewProviderPromise,
     // await reactWebViewProviderPromise,
-    await reactWebViewProvider2Promise,
+    // await reactWebViewProvider2Promise,
+    await servicesWebViewProviderPromise,
     await aquaAnalysisWebViewProviderPromise,
     await lexiconWebViewProviderPromise,
     onDoStuffEmitter,

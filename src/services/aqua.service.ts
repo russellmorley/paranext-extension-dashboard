@@ -3,6 +3,7 @@ import papi from '@papi/frontend';
 
 export type Requester = <T>(request: string, configuration?: RequestInit) => Promise<T>;
 
+// If relying on headers, see https://stackoverflow.com/a/45640164, https://web.dev/articles/introduction-to-fetch#response_types
 export const httpRequester: Requester = async <T>(request: string, configuration?: RequestInit) => {
   console.log(configuration);
   const response = await papi.fetch(request, configuration);
