@@ -1,6 +1,30 @@
 declare module 'paranext-extension-dashboard' {
   import { DataProviderDataType, IDataProvider } from '@papi/core';
 
+  export type Results = Result[];
+
+  export type ResultsSelector = {assessment_id: number, book?: string};
+
+  export type Result = {
+    id?: number;
+    assessment_id?: number;
+    vref?: string;
+    source?: string;
+    target?: string;
+    score?: number;
+    flag?: boolean;
+    type?: string;
+    note?: string;
+  };
+
+  export type AquaDataTypes = {
+    // Result: DataProviderDataType<Result>;
+    Results: DataProviderDataType<ResultsSelector, Results, void>
+  }
+  export type AquaDataProvider = IDataProvider<AquaDataTypes>;
+
+
+
   export type ExtensionVerseSetData = string | { text: string; isHeresy: boolean };
 
   export type ExtensionVerseDataTypes = {
@@ -34,7 +58,7 @@ declare module 'paranext-extension-dashboard' {
 }
 
 declare module 'papi-shared-types' {
-  import type { ExtensionVerseDataProvider } from 'paranext-extension-dashboard';
+  import type { AquaDataProvider, ExtensionVerseDataProvider } from 'paranext-extension-dashboard';
 
   export interface CommandHandlers {
     'extensionTemplateHelloWorld.doStuff': (message: string) => {
@@ -45,5 +69,6 @@ declare module 'papi-shared-types' {
 
   export interface DataProviders {
     'paranextExtensionTemplate.quickVerse': ExtensionVerseDataProvider;
+    'aqua.results': AquaDataProvider;
   }
 }

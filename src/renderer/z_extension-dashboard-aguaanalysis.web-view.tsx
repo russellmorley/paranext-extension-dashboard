@@ -5,9 +5,11 @@ import type { DoStuffEvent, DashboardVerseChangeEvent } from 'paranext-extension
 import { Button } from 'papi-components';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { AquaService, httpRequester, Result } from './services/aqua.service';
+import { AquaService, Result } from '../shared/services/aqua.service';
+import { IndexedDbPersist } from './services/indexeddb-persist.service';
+import { httpRequester } from './utils/httprequester.util';
 
-globalThis.webViewComponent = function Dashboard() {
+globalThis.webViewComponent = function AquaAnalysis() {
   const [clicks, setClicks] = useState(0);
   const [dashboardVerseRef, setDashboardVerseRef] = useState('');
   // const [verseOffset, setVerseOffset] = useState(0);
@@ -66,26 +68,42 @@ globalThis.webViewComponent = function Dashboard() {
     'Loading latest Scripture text from extension template...',
   );
 
-  const assessmentId: string = window.getWebViewState('assessment_id') ?? '<not set>';
-  const versionId: string = window.getWebViewState('version_id') ?? '<not set>';
+  class SettingsWebviewState {
+    assessment_id: string | undefined;
+    version_id: string | undefined;
+  }
 
+  const settings = window.getWebViewState<SettingsWebviewState>('_settings');
+  if (!settings)
+    return undefined;
 
+  // const assessmentId: string = window.getWebViewState('assessment_id') ?? '<not set>';
+  // const versionId: string = window.getWebViewState('version_id') ?? '<not set>';
+
+  const assessmentId = settings.assessment_id;
+  const versionId = settings.version_id;
+
+  if (!assessmentId || !versionId)
+    return undefined;
+
+  const aquaService = new AquaService(
+    'https://fxmhfbayk4.us-east-1.awsapprunner.com/v2',
+    {
+      // mode: 'no-cors',
+      headers: {
+        "api_key": "7cf43ae52dw8948ddb663f9cae24488a4",
+        // origin: "https://fxmhfbayk4.us-east-1.awsapprunner.com",
+      },
+      // credentials: "include",
+    },
+    httpRequester,
+    new IndexedDbPersist("aqua"),
+  );
 
   useEffect(() => {
     async function getResults() {
       try {
-        const results = await   new AquaService(
-          'https://fxmhfbayk4.us-east-1.awsapprunner.com/v2',
-          {
-            // mode: 'no-cors',
-            headers: {
-              "api_key": "7cf43ae52dw8948ddb663f9cae24488a4",
-              // origin: "https://fxmhfbayk4.us-east-1.awsapprunner.com",
-            },
-            // credentials: "include",
-          },
-          httpRequester,
-        ).ListResults(parseInt(assessmentId));
+        const results = await aquaService.getResults({assessment_id: parseInt(assessmentId!)});
         console.log(results);
       } catch(e) {
         console.error(e);
