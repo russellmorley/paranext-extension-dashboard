@@ -9,7 +9,7 @@ import type {
   ResultsSelector,
 } from 'paranext-extension-dashboard';
 import {ExtensionStoragePersist} from './services/extension-storage.persist.service';
-import { httpPapiBackRequester } from "./http.papiback.requester.util";
+import { httpPapiBackRequester } from "./utils/http.papiback.requester.util";
 
 export class AquaDataProviderEngine
   extends DataProviderEngine<AquaDataTypes>

@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import {NamedPairs, NamedPairsCollectionContext} from './namedpairscollection.context';
+import {NamedPairs, NamedPairsContext} from './namedpairs.context';
 import { ApexOptions } from "apexcharts";
 import Chart from 'react-apexcharts';
 import { CurrentVerseContext } from "./currentverse.context";
@@ -10,7 +10,7 @@ import { VerseRef } from "@sillsdev/scripture";
 
 
 export function ChartsFromNamedPairs() {
-  const namedPairsCollection = useContext(NamedPairsCollectionContext);
+  const namedPairsCollection = useContext(NamedPairsContext);
   const verseRef = useContext(CurrentVerseContext);
   const [leftSliderPosition, setLeftSliderPosition] = useState(.99);
   const [rightSliderPosition, setRightSliderPosition] = useState(1);

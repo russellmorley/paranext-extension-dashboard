@@ -1,10 +1,60 @@
 # paranext-extension-dashboard
 
-Fully function 'hello world' extension template for Paranext
+An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard
+as well as browser-based web applications.
 
-## Summary
+Initial domain-specific components include those for both AQuA and Dashboard Tokenized Text, bringing AQuA's analysis, and Dashboard's Tokenized
+Corpora views, to Paranext, Dashboard, and the web through the same, reusable components.  
 
-This is a webpack project template pre-configured to build Paranext extensions. It contains a fully functional extension that can be used as learning material and inspiration when building your first extension. Should you already be familiar with developing extension, we suggest using the slimmed down [`paranext-extension-dashboard`](https://github.com/paranext/paranext-extension-dashboard).
+## Terminology
+
+The following terms are used in this document to disambiguate different deployment scenarios for components:
+
+- *BrowserApps*
+  - *ParanextWebviewExtensions*
+  - *SPA*  - single page web applications like AQuA's web portal
+- *ParanextExtensionHostComponents*
+  - *ParanextCommandExtensions* - when configured to run in ParanextExtensionHost process
+  - *ParanextDataEngineExtensions* - when configured to run in ParanextExtensionHost process
+
+## Directory structure
+
+### Components and Naming Patterns
+
+- `extension-host` _(For *ParanextExtensionHostComponents*)_
+  - `services`
+    - `services/extension-storage.persist.service` _(For *ParanextExtensionHostComponents*: exposes `papi.backend.storage` as `IPersist` to support
+    service persistence (e.g. caching) when exposed as *ParanextCommandExtensions* or *ParanextDataEngineExtensions*)_ 
+  - `extension-host/utils`
+    - `utils/http.papiback.requester.util` _(For *ParanextExtensionHostComponents*: implements `Requester` using `papi.backend`)
+  - `aqua-dataproviderengine` _(For *ParanextDataEngineExtension*: makes `aqua.service` functionality available to other *ParanextWebviewExtensions* and *ParanextExtensionHostComponents* as a Paranext `DataProviderEngine`. Uses `extension-storagepersist.service` to persist in Paranext Extension Host's-preferred way.
+- `renderer`  _(For *BrowserApps*)_
+  - `renderer/services`
+    - `renderer/services/indexeddb-persist-service` _(For *SPA*: implements IPersist for web applications)_
+  - `renderer/utils`  
+    - `renderer/utils/http.browser.requester.util`  _(For *SPA*: implements Requester for web applications)_
+    - `renderer/utils/http.papifront.requester.util`  _(For *ParanextWebviewExtensions*: implements Requester using `papi.frontend`)_
+    - `renderer//utils/async-task.util`  _(For *SPA*: Implements IAsyncTask. Should work for both *SPA* and *ParanextWebviewExtensions*, although paranext work would ideally be delegated to a separate *ParanextCommandExtension* or *ParanextDataEngineExtension* that runs in paranext's Extension Host process that can be shared with other extensions)_)
+    [web components]
+    dashboard-webview (ParanextWebviewExtension wrapper, enabling child components to run in paranext as a webview extension and providing them information as to the verse active in the editor)
+    dashboard-list (hosts components in rows that can be moved, components can be dynamically added and removed in either a ParanextWebviewExtension tab or SPA view.. Equivalent to Dashboard's Enhanced View)
+  - `renderer/*.[data type].datacontext.tsx` _(makes data types available to child React components through a `renderer/[data type].context`.)_
+  - `renderer/[data type].context.ts` _(makes the data types available to child components as a React context.)_
+  - `renderer/*.[data type].component.tsx` (a child component that consumes data type, provided to it through a `renderer/[data type].context` by a parent `renderer/*.[data type].datacontext.tsx`)_
+  - `renderer/*.web-view.tsx` _(the base parent React component for paranext webview extensions)_
+  - `renderer/*.component.tsx` _(a reusable React component. Data to this component is provided through params and not context, making 
+  such components not dependent on any `renderer/*.[data type].datacontext.tsx`s)_
+- `shared` _(for both BrowserApps and ParanextExtensionHost extensions)_
+  - `services`
+    - `shared/services/aqua.service` _(service interface for AQuA, which uses an implementation of `Requester` to make requests to AQuA's endpoints, and `IPersist` to support persistent caching through `cache.service`)_
+      - `shared/services/cache.service` _(provides caching for services. Uses an implementation of `IPersist` for persistent storage)_
+  - `services/utils`
+    - `shared//services/async-lock.util` _(a JS promise-based non-blocking lock for synchronizing in-process async operations, e.g. syncing `aqua.service` remote and cache updates, and `cache.service` updates to shared map and `IPersist`)_
+    - `array-manipulations.util` _(utilities for processing arrays, e.g. `groupBy()`)_
+
+### Top level
+
+This repository is structured as specified by Paranext:
 
 - `package.json` contains information about this extension's npm package. It is required for Paranext to use the extension properly. It is copied into the build folder
 - `src` contains the source code for the extension
@@ -19,74 +69,107 @@ This is a webpack project template pre-configured to build Paranext extensions. 
 - `dist` is a generated folder containing your built extension files
 - `release` is a generated folder containing a zip of your built extension files
 
+## Assembling components 
+
+  ### Paranext
+
+  #### Example - AQuA
+
+The following assembly of components results in an AQuA histogram webview that caches data for 
+offline use and displays assessment results centered on the current Paranext verse:
+
+- `verseaware.web-view.tsx` - connects to Paranext (and Dashboard) verse change events and configures the 
+child context environment to use `httpPapiFrontRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)
+for async processing of long tasks, and `extension-storage.persist.service` for caching data to disk
+using `Papi.backent` (Paranext Extension Host's) `storage` service. 
+  - `componentlist.component.tsx` to display more than one web view in rows, and add, remove, and reorder
+  web views (much like Dashboard's Enhanced View).
+    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the
+    requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter
+    using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make
+    it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in
+    this deployment scenario.
+      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a
+      charting library and `dualslider.component.tsx` to filter data ranges.
+
+
+  ### Dashboard
+
+  #### Example - Dashboard
+
+Exactly the same as for 'Example - AQuA, with `dashboard-integration.web-view.tsx` used by a
+headless browser in Dashboard to provide PAPI access to Dashboard api services.
+
+  ### Web 
+
+As a part of a single page app web portal that directly interacts with AQuA's machine learning endpoints using
+the browser's native `fetch` through `httpBrowserRequester` and persists data to the browser's native IndexedDb 
+through `indexeddb.persist.service`. Notice that components under `portal.tsx` are exactly the same as for Paranext
+and Dashboard deployement scenarios for the portal's 'histogram' charting of Results portion of overall functionality, 
+except the developer chose to remove `componentlist.component.tsx` since a display in rows was not desired.
+
+- `index.html` - bootstraps React, loading:
+  - `portal.tsx` - configures the 
+  child context environment to use `httpBrowserRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)
+  for async processing of long tasks, and `indexeddb.persist.service` for caching data using the browser's built-in
+  data storage facility (IndexedDB).
+    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's endpoints using the
+    requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter
+    using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make
+    it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in
+    this deployment scenario.
+      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a
+      charting library and `dualslider.component.tsx` to filter data ranges.
+
 ## To install
 
-### Configure paths to `paranext-core` repo
+  ### Paranext
 
-In order to interact with `paranext-core`, you must point `package.json` to your installed `paranext-core` repository:
+  #### Development
 
-1. Follow the instructions to install [`paranext-core`](https://github.com/paranext/paranext-core#developer-install). We recommend you clone `paranext-core` in the same parent directory in which you cloned this repository so you do not have to reconfigure paths to `paranext-core`.
-2. If you cloned `paranext-core` anywhere other than in the same parent directory in which you cloned this repository, update the paths to `paranext-core` in this repository's `package.json` to point to the correct `paranext-core` directory.
+1. Clone [`this repository](https://github.com/russellmorley/paranext-extension-dashboard)
+2. Run `npm install`
+3. Clone to sibling directory [`PAPI Core`](https://github.com/paranext/paranext-core), 
+4. follow (instructions in readme)[https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install], including
+running `npm install`.
 
-### Install dependencies
-
-Run `npm install` to install local and published dependencies
-
-### Configure extension details
-
-This section is a more compact version of the [`Your first extension` guide](https://github.com/paranext/paranext-extension-dashboard/wiki/Your-First-Extension).
-
-#### Search and replace placeholders
-
-- **Search for:** paranext-extension-dashboard
-  **Replace with:** your-extension-name
-- **Search for:** Extension for Dashboard
-  **Replace with:** Your Extension
-  (Be sure to match case)
-
-#### Filenames
-
-You need to change the filename of the `.d.ts` file, which is located in `/src/types` and referenced in the `package.json` “types” field. See more information on the [.d.ts files](https://github.com/paranext/paranext-extension-dashboard/wiki/Extension-Anatomy#type-declaration-files-dts).
-
-#### Manifest
-
-The `manifest.json` and `package.json` files makeup your extension manifest. Add your details in these two files based on your extension name and what you renamed the files described in 1 and 2. See more information on the `manifest.json` and `package.json` files in [Extension Anatomy](https://github.com/paranext/paranext-extension-dashboard/wiki/Extension-Anatomy#extension-manifest).
-
-#### Webpack
-
-You will need to add your extension's name into `webpack.config.main.ts` and `webpack.util.ts`. The search and replace actions listed above will correct this for you.
-
-## To run
-
-### Running Paranext with your extension
-
-To run Paranext with your extension:
-
-`npm start`
-
-Note: The built extension will be in the `dist` folder. In order for Paranext to run your extension, you must provide the directory to your built extension to Paranext via a command-line argument. This command-line argument is already provided in this `package.json`'s `start` script. If you want to start Paranext and use your extension any other way, you must provide this command-line argument or put the `dist` folder into Paranext's `extensions` folder.
-
-### Building your extension independently
-
-To watch extension files (in `src`) for changes:
-
-`npm run watch`
-
-To build the extension once:
-
-`npm run build`
-
-## To package for distribution
+  #### To package for production
 
 To package your extension into a zip file for distribution:
 
 `npm run package`
 
-## To update
+  ### Dashboard
 
-The `paranext-extension-dashboard` will be updated regularly, and will sometimes receive updates that help with breaking changes on `paranext-core`. So we recommend you periodically update your extension by merging the latest template updates into your extension. You can do so by following [these instructions](https://github.com/paranext/paranext-extension-template/wiki/Merging-Template-Changes-into-Your-Extension).
+  #### Development
 
-## Special features of the template
+1. Clone and build [`Dashboard, Paranext Branch`](https://github.com/Clear-Bible/ClearDashboard/tree/paranext)
+2. Clone [`this repository](https://github.com/russellmorley/paranext-extension-dashboard)
+3. Run `npm install`
+4. Clone to sibling directory [`PAPI Core (standalone), Dashboard Branch`](https://github.com/russellmorley/paranext-core/tree/dashboard), 
+5. follow (instructions at)[https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install], including
+running `npm install`.
+
+  ### Browser Apps
+
+(Dependent on packaging and deployment approach)
+
+## To run in development
+
+  ### Dashboard
+
+1. Execute `npm run start:PAPI-standalone` in the base directory in which you installed this repository from a command shell.
+2. Execute Dashboard from Visual Studio.
+
+  ### Paranext
+
+Execute `npm start` in the base directory in which you installed this repository from a command shell.
+
+  ### Browser Apps
+
+(Dependent on packaging and deployment approach)
+
+## Notes about Paranext Webviews
 
 This template has special features and specific configuration to make building an extension for Paranext easier. Following are a few important notes:
 

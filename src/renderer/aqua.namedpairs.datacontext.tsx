@@ -1,7 +1,7 @@
 import 'src/shared/utils/array-manipulations.util';
 
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
-import {NamedPairs, NamedPairsCollectionContext} from './namedpairscollection.context';
+import {NamedPairs, NamedPairsContext} from './namedpairs.context';
 import { AquaService } from "src/shared/services/aqua.service";
 //import { IndexedDbPersist } from "./services/indexeddb-persist.service";
 //import { httpPapiFrontRequester } from "./utils/http.papifront.requester.util";
@@ -84,9 +84,9 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
 
   return (
     <>
-      <NamedPairsCollectionContext.Provider value={namedPairsCollection}>
+      <NamedPairsContext.Provider value={namedPairsCollection}>
         {children}
-      </NamedPairsCollectionContext.Provider>
+      </NamedPairsContext.Provider>
     </>
   );
 }
