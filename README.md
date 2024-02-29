@@ -1,52 +1,46 @@
 # paranext-extension-dashboard
 
-An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard
-as well as browser-based web applications.
+An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
-Initial domain-specific components include those for both AQuA and Dashboard Tokenized Text, bringing AQuA's analysis, and Dashboard's Tokenized
-Corpora views, to Paranext, Dashboard, and the web through the same, reusable components.  
+Initial domain-specific components include those for both AQuA and Dashboard Tokenized Text, bringing AQuA's analysis, and Dashboard's Tokenized Corpora views, to Paranext, Dashboard, and the web through the same, reusable components.  
 
 ## Terminology
 
 The following terms are used in this document to disambiguate different deployment scenarios for components:
 
-- *BrowserApps*
-  - *ParanextWebviewExtensions*
-  - *SPA*  - single page web applications like AQuA's web portal
-- *ParanextExtensionHostComponents*
-  - *ParanextCommandExtensions* - when configured to run in ParanextExtensionHost process
-  - *ParanextDataEngineExtensions* - when configured to run in ParanextExtensionHost process
+- **BrowserApps**
+  - **ParanextWebviewExtensions**
+  - **SPA**  - single page web applications like AQuA's web portal
+- **ParanextExtensionHostComponents**
+  - **ParanextCommandExtensions** - when configured to run in ParanextExtensionHost process
+  - **ParanextDataEngineExtensions** - when configured to run in ParanextExtensionHost process
 
 ## Directory structure
 
 ### Components and Naming Patterns
 
-- `extension-host` _(For *ParanextExtensionHostComponents*)_
+- `extension-host` _(For **ParanextExtensionHostComponents**)_
   - `services`
-    - `services/extension-storage.persist.service` _(For *ParanextExtensionHostComponents*: exposes `papi.backend.storage` as `IPersist` to support
-    service persistence (e.g. caching) when exposed as *ParanextCommandExtensions* or *ParanextDataEngineExtensions*)_ 
+    - `services/extension-storage.persist.service` _(For **ParanextExtensionHostComponents**: exposes `papi.backend.storage` as `IPersist` to support
+    service persistence (e.g. caching) when exposed as **ParanextCommandExtensions** or **ParanextDataEngineExtensions**)_ 
   - `extension-host/utils`
-    - `utils/http.papiback.requester.util` _(For *ParanextExtensionHostComponents*: implements `Requester` using `papi.backend`)
-  - `aqua-dataproviderengine` _(For *ParanextDataEngineExtension*: makes `aqua.service` functionality available to other *ParanextWebviewExtensions* and *ParanextExtensionHostComponents* as a Paranext `DataProviderEngine`. Uses `extension-storagepersist.service` to persist in Paranext Extension Host's-preferred way.
-- `renderer`  _(For *BrowserApps*)_
+    - `utils/http.papiback.requester.util` _(For **ParanextExtensionHostComponents**: implements `Requester` using `papi.backend`)_
+  - `aqua-dataproviderengine` _(For **ParanextDataEngineExtension**: makes `aqua.service` functionality available to other **ParanextWebviewExtensions** and **ParanextExtensionHostComponents** as a Paranext `DataProviderEngine`. Uses `extension-storagepersist.service` to persist in Paranext Extension Host's-preferred way.)_
+- `renderer`  _(For **BrowserApps**)_
   - `renderer/services`
-    - `renderer/services/indexeddb-persist-service` _(For *SPA*: implements IPersist for web applications)_
+    - `renderer/services/indexeddb-persist-service` _(For **SPA**: implements `IPersist` for web applications)_
   - `renderer/utils`  
-    - `renderer/utils/http.browser.requester.util`  _(For *SPA*: implements Requester for web applications)_
-    - `renderer/utils/http.papifront.requester.util`  _(For *ParanextWebviewExtensions*: implements Requester using `papi.frontend`)_
-    - `renderer//utils/async-task.util`  _(For *SPA*: Implements IAsyncTask. Should work for both *SPA* and *ParanextWebviewExtensions*, although paranext work would ideally be delegated to a separate *ParanextCommandExtension* or *ParanextDataEngineExtension* that runs in paranext's Extension Host process that can be shared with other extensions)_)
-    [web components]
-    dashboard-webview (ParanextWebviewExtension wrapper, enabling child components to run in paranext as a webview extension and providing them information as to the verse active in the editor)
-    dashboard-list (hosts components in rows that can be moved, components can be dynamically added and removed in either a ParanextWebviewExtension tab or SPA view.. Equivalent to Dashboard's Enhanced View)
+    - `renderer/utils/http.browser.requester.util`  _(For **SPA**: implements `Requester` for web applications)_
+    - `renderer/utils/http.papifront.requester.util`  _(For **ParanextWebviewExtensions**: implements `Requester` using `papi.frontend`)_
+    - `renderer/utils/async-task.util`  _(For **SPA**: Implements `IAsyncTask`. Should work for both **SPA** and **ParanextWebviewExtensions**, although paranext work would ideally be delegated to a separate **ParanextCommandExtension** or **ParanextDataEngineExtension** that runs in paranext's Extension Host process that can be shared with other extensions)_
   - `renderer/*.[data type].datacontext.tsx` _(makes data types available to child React components through a `renderer/[data type].context`.)_
   - `renderer/[data type].context.ts` _(makes the data types available to child components as a React context.)_
-  - `renderer/*.[data type].component.tsx` (a child component that consumes data type, provided to it through a `renderer/[data type].context` by a parent `renderer/*.[data type].datacontext.tsx`)_
+  - `renderer/*.[data type].component.tsx` _(a child component that consumes data type, provided to it through a `renderer/[data type].context` by a parent `renderer/*.[data type].datacontext.tsx`)_
   - `renderer/*.web-view.tsx` _(the base parent React component for paranext webview extensions)_
-  - `renderer/*.component.tsx` _(a reusable React component. Data to this component is provided through params and not context, making 
-  such components not dependent on any `renderer/*.[data type].datacontext.tsx`s)_
-- `shared` _(for both BrowserApps and ParanextExtensionHost extensions)_
+  - `renderer/*.component.tsx` _(a reusable React component. Data to this component is provided through params and not context, making such components not dependent on any `renderer/*.[data type].datacontext.tsx`)_
+- `shared` _(for both **BrowserApps** and **ParanextExtensionHost** extensions)_
   - `services`
-    - `shared/services/aqua.service` _(service interface for AQuA, which uses an implementation of `Requester` to make requests to AQuA's endpoints, and `IPersist` to support persistent caching through `cache.service`)_
+    - `shared/services/aqua.service` _(service interface for AQuA, which uses an implementation of `Requester` to make requests to AQuA's endpoints and `IPersist` to support persistent caching through `cache.service`)_
       - `shared/services/cache.service` _(provides caching for services. Uses an implementation of `IPersist` for persistent storage)_
   - `services/utils`
     - `shared//services/async-lock.util` _(a JS promise-based non-blocking lock for synchronizing in-process async operations, e.g. syncing `aqua.service` remote and cache updates, and `cache.service` updates to shared map and `IPersist`)_
@@ -71,55 +65,32 @@ This repository is structured as specified by Paranext:
 
 ## Assembling components 
 
-  ### Paranext
+### Paranext
 
-  #### Example - AQuA
+#### Example - AQuA
 
-The following assembly of components results in an AQuA histogram webview that caches data for 
-offline use and displays assessment results centered on the current Paranext verse:
+The following assembly of components results in an AQuA histogram webview that caches data for offline use and displays assessment results centered on the current Paranext verse:
 
-- `verseaware.web-view.tsx` - connects to Paranext (and Dashboard) verse change events and configures the 
-child context environment to use `httpPapiFrontRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)
-for async processing of long tasks, and `extension-storage.persist.service` for caching data to disk
-using `Papi.backent` (Paranext Extension Host's) `storage` service. 
-  - `componentlist.component.tsx` to display more than one web view in rows, and add, remove, and reorder
-  web views (much like Dashboard's Enhanced View).
-    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the
-    requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter
-    using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make
-    it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in
-    this deployment scenario.
-      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a
-      charting library and `dualslider.component.tsx` to filter data ranges.
+- `verseaware.web-view.tsx` - connects to Paranext (and Dashboard) verse change events and configures the child context environment to use `httpPapiFrontRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers) for async processing of long tasks, and `extension-storage.persist.service` for caching data to disk using `Papi.backent` (Paranext Extension Host's) `storage` service. 
+  - `componentlist.component.tsx` to display more than one web view in rows, and add, remove, and reorder web views (much like Dashboard's Enhanced View).
+    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
+      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
 
-  ### Dashboard
+### Dashboard
 
-  #### Example - Dashboard
+#### Example - Dashboard
 
-Exactly the same as for 'Example - AQuA, with `dashboard-integration.web-view.tsx` used by a
-headless browser in Dashboard to provide PAPI access to Dashboard api services.
+Exactly the same as for 'Example - AQuA, with `dashboard-integration.web-view.tsx` used by a headless browser in Dashboard to provide PAPI access to Dashboard api services.
 
-  ### Web 
+### Web 
 
-As a part of a single page app web portal that directly interacts with AQuA's machine learning endpoints using
-the browser's native `fetch` through `httpBrowserRequester` and persists data to the browser's native IndexedDb 
-through `indexeddb.persist.service`. Notice that components under `portal.tsx` are exactly the same as for Paranext
-and Dashboard deployement scenarios for the portal's 'histogram' charting of Results portion of overall functionality, 
-except the developer chose to remove `componentlist.component.tsx` since a display in rows was not desired.
+As a part of a single page app web portal that directly interacts with AQuA's machine learning endpoints using the browser's native `fetch` through `httpBrowserRequester` and persists data to the browser's native IndexedDb through `indexeddb.persist.service`. _Notice that components under `portal.tsx` are exactly the same as for Paranext and Dashboard deployement scenarios for the portal's 'histogram' charting of Results portion of overall functionality, except the developer chose to remove `componentlist.component.tsx` since a display in rows was not desired.
 
 - `index.html` - bootstraps React, loading:
-  - `portal.tsx` - configures the 
-  child context environment to use `httpBrowserRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)
-  for async processing of long tasks, and `indexeddb.persist.service` for caching data using the browser's built-in
-  data storage facility (IndexedDB).
-    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's endpoints using the
-    requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter
-    using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make
-    it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in
-    this deployment scenario.
-      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a
-      charting library and `dualslider.component.tsx` to filter data ranges.
+  - `portal.tsx` - configures the child context environment to use `httpBrowserRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)for async processing of long tasks, and `indexeddb.persist.service` for caching data using the browser's built-in data storage facility (IndexedDB).
+    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
+      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
 ## To install
 
