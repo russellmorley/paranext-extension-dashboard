@@ -1,4 +1,5 @@
-import { AsyncLock } from "src/shared/utils/async-lock";
+import { IPersist } from "src/types/persist.type";
+import { AsyncLock } from "../utils/async-lock.util";
 
 
 export type SelectorInfo = {
@@ -12,17 +13,6 @@ type IMap<T> = {
   [key in string]: Array<T>;
 };
 
-export interface IPersist{
-  get(key: string) : Promise<any[] | undefined>;
-  /**
-   * Replaces items already stored under key with items parameter.
-   * @param key
-   * @param items
-   */
-  set(key: string, items: any[]): Promise<void>;
-  remove(key: string): Promise<void>;
-  // clear(): Promise<void>;
-}
 
 export class CacheService<T> {
   private map: IMap<T> = {};

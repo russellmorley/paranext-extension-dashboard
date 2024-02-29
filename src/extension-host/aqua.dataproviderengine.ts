@@ -8,8 +8,8 @@ import type {
   Results,
   ResultsSelector,
 } from 'paranext-extension-dashboard';
-import {ExtensionStoragePersist} from './services/extension-storage-persist.service';
-import { httpRequester } from "./httprequester.util";
+import {ExtensionStoragePersist} from './services/extension-storage.persist.service';
+import { httpPapiBackRequester } from "./http.papiback.requester.util";
 
 export class AquaDataProviderEngine
   extends DataProviderEngine<AquaDataTypes>
@@ -30,7 +30,7 @@ export class AquaDataProviderEngine
         },
         // credentials: "include",
       },
-      httpRequester,
+      httpPapiBackRequester,
       new ExtensionStoragePersist(token, prefix),
     );
   }

@@ -1,21 +1,21 @@
-import 'src/shared/utils/array-manipulations';
+import 'src/shared/utils/array-manipulations.util';
 
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
-import {NamedPairsCollectionContext} from './namedpairs-collection-context';
+import {NamedPairs, NamedPairsCollectionContext} from './namedpairscollection.context';
 import { AquaService } from "src/shared/services/aqua.service";
 //import { IndexedDbPersist } from "./services/indexeddb-persist.service";
-import { httpRequester } from "./utils/httprequester.util";
-import {VerseContext } from "./verse-context";
+//import { httpPapiFrontRequester } from "./utils/http.papifront.requester.util";
+import {CurrentVerseContext } from "./currentverse.context";
 import { Result } from "paranext-extension-dashboard";
 import { VerseRef } from "@sillsdev/scripture";
-import { groupBySelector } from 'src/shared/utils/array-manipulations';
-
-export type NamedPairs = {name: string, data: [{x: string, y: number}]};
-
-
+import { groupBySelector } from 'src/shared/utils/array-manipulations.util';
+import { EnvironmentContext } from './environment.context';
 
 export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
-  const verseRef = useContext(VerseContext);
+  const verseRef = useContext(CurrentVerseContext);
+  const environment = useContext(EnvironmentContext);
+  if (!environment.requester)
+    throw new Error("environment requester must be set for this service");
   const [namedPairsCollection, setNamedPairsCollection] = useState([] as NamedPairs[]);
   const [aquaService] = useState(new AquaService(
     'https://fxmhfbayk4.us-east-1.awsapprunner.com/v2',
@@ -27,8 +27,8 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
       },
       // credentials: "include",
     },
-    httpRequester,
-    undefined, //new LocalStoragePersist("aqua"),
+    environment!.requester,
+    environment.persist,
   ));
 
   class SettingsWebviewState {

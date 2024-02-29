@@ -1,4 +1,5 @@
 import { createContext } from 'react';
-import { NamedPairs } from './aqua.namedpairs.datacontext';
+
+export type NamedPairs = {name: string, data: [{x: string, y: number}]};
 
 export const NamedPairsCollectionContext = createContext([] as NamedPairs[]);

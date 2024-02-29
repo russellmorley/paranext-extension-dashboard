@@ -20,10 +20,10 @@ import type {
 } from 'paranext-extension-dashboard';
 import https from 'https';
 
-import dashboardIntegrationServices from './renderer/dashboard-integration-services.web-view?inline';
-import dashboardWebView from './renderer/dashboard.web-view?inline';
-import dashboardWebViewStyles from './renderer/dashboard.web-view.scss?inline';
-import { AquaDataProviderEngine } from './extension-host/aqua-dataproviderengine';
+import dashboardIntegrationWebview from './renderer/dashboard-integration.web-view?inline';
+import verseAwareWebView from './renderer/verseaware.web-view?inline';
+import verseawareWebViewStyles from './renderer/verseaware.web-view.scss?inline';
+import { AquaDataProviderEngine } from './extension-host/aqua.dataproviderengine';
 
 
 import extensionDashboardAquaAnalysis from './renderer/z_extension-dashboard-aguaanalysis.web-view?inline';
@@ -292,33 +292,33 @@ class QuickVerseDataProviderEngine
   }
 }
 
-const dashboardIntegrationServicesWebViewType = 'dashboardintegration.services';
-const servicesWebViewProvider: IWebViewProvider = {
+const dashboardIntegrationWebViewType = 'dashboardintegration.webview';
+const dashboardIntegrationWebViewProvider: IWebViewProvider = {
   async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
-    if (savedWebView.webViewType !== dashboardIntegrationServicesWebViewType)
+    if (savedWebView.webViewType !== dashboardIntegrationWebViewType)
       throw new Error(
-        `${dashboardIntegrationServicesWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
+        `${dashboardIntegrationWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
       );
     return {
       ...savedWebView,
       title: 'Headless webview for Dashboard Services (API)',
-      content: dashboardIntegrationServices,
+      content: dashboardIntegrationWebview,
     };
   },
 };
 
-const dashboardWebViewType = 'dashboard.webview';
-const dashboardWebViewProvider: IWebViewProvider = {
+const verseawareWebViewType = 'verseaware.webview';
+const verseawareWebViewProvider: IWebViewProvider = {
   async getWebView(savedWebView: SavedWebViewDefinition): Promise<WebViewDefinition | undefined> {
-    if (savedWebView.webViewType !== dashboardWebViewType)
+    if (savedWebView.webViewType !== verseawareWebViewType)
       throw new Error(
-        `${dashboardWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
+        `${verseawareWebViewType} provider received request to provide a ${savedWebView.webViewType} web view`,
       );
     return {
       ...savedWebView,
-      title: 'Dashboard',
-      content: dashboardWebView,
-      styles: dashboardWebViewStyles,
+      title: 'Verse Aware Webview',
+      content: verseAwareWebView,
+      styles: verseawareWebViewStyles,
     };
   },
 };
@@ -389,14 +389,14 @@ export async function activate(context: ExecutionActivationContext) {
   );
 
 
-  const servicesWebViewProviderPromise = papi.webViewProviders.register(
-    dashboardIntegrationServicesWebViewType,
-    servicesWebViewProvider,
+  const dashboardIntegrationWebViewProviderPromise = papi.webViewProviders.register(
+    dashboardIntegrationWebViewType,
+    dashboardIntegrationWebViewProvider,
   );
 
-  const dashboardWebViewProviderPromise = papi.webViewProviders.register(
-    dashboardWebViewType,
-    dashboardWebViewProvider,
+  const verseawareWebViewProviderPromise = papi.webViewProviders.register(
+    verseawareWebViewType,
+    verseawareWebViewProvider,
   );
 
   const aquaAnalysisWebViewProviderPromise = papi.webViewProviders.register(
@@ -467,8 +467,8 @@ export async function activate(context: ExecutionActivationContext) {
   // `paranext-core's hello-someone`.
 
 
-  papi.webViews.getWebView(dashboardIntegrationServicesWebViewType, undefined, {existingId: '?'});
-  papi.webViews.getWebView(dashboardWebViewType, undefined, {existingId: '?'});
+  papi.webViews.getWebView(dashboardIntegrationWebViewType, undefined, {existingId: '?'});
+  papi.webViews.getWebView(verseawareWebViewType, undefined, {existingId: '?'});
 
   papi.webViews.getWebView(aquaAnalysisWebViewType, undefined, { existingId: '?' });
   papi.webViews.getWebView(lexiconWebViewType, undefined, { existingId: '?' });
@@ -478,8 +478,8 @@ export async function activate(context: ExecutionActivationContext) {
     await quickVerseDataProviderPromise,
     await aquaDataProviderPromise,
 
-    await servicesWebViewProviderPromise,
-    await dashboardWebViewProviderPromise,
+    await dashboardIntegrationWebViewProviderPromise,
+    await verseawareWebViewProviderPromise,
 
     await aquaAnalysisWebViewProviderPromise,
     await lexiconWebViewProviderPromise,

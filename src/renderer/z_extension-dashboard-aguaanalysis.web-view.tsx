@@ -6,8 +6,8 @@ import { Button } from 'papi-components';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { AquaService, Result } from '../shared/services/aqua.service';
-import { IndexedDbPersist } from './services/indexeddb-persist.service';
-import { httpRequester } from './utils/httprequester.util';
+import { IndexedDbPersist } from './services/indexeddb.persist.service';
+import { httpPapiFrontRequester } from './utils/http.papifront.requester.util';
 
 globalThis.webViewComponent = function AquaAnalysis() {
   const [clicks, setClicks] = useState(0);
@@ -96,7 +96,7 @@ globalThis.webViewComponent = function AquaAnalysis() {
       },
       // credentials: "include",
     },
-    httpRequester,
+    httpPapiFrontRequester,
     new IndexedDbPersist("aqua"),
   );
 

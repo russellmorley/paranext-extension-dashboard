@@ -1,6 +1,6 @@
 import { ExecutionToken } from "@papi/core";
-import { IPersist } from "src/shared/services/cache.service";
 import {storage} from "@papi/backend";
+import { IPersist } from "src/types/persist.type";
 
 export class ExtensionStoragePersist implements IPersist {
   token: ExecutionToken;

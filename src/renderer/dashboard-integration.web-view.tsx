@@ -5,7 +5,7 @@ import type { ParanextVerseChangeEvent } from 'paranext-extension-dashboard';
 import { request } from 'http';
 import { setgroups } from 'process';
 
-globalThis.webViewComponent = function Api() {
+globalThis.webViewComponent = function DashboardIntegration() {
 
   useEvent<ParanextVerseChangeEvent>(
     'platform.paranextVerseChange',

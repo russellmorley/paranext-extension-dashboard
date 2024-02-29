@@ -1,17 +1,17 @@
 import { useContext } from "react";
-import { VersesContext } from "./verses-context";
-import { VerseContext } from "./verse-context";
-import { TokenDisplay } from "./dashboard.tokendisplay";
+import { VersesContext } from "./verses.context";
+import { CurrentVerseContext } from "./currentverse.context";
+import { TextFromToken } from "./texttoken.component";
 
 
-export function DashboardVersesVerseRangeDisplay() {
+export function VerseTextFromVerses() {
   const verses = useContext(VersesContext);
-  const verseRef = useContext(VerseContext);
+  const verseRef = useContext(CurrentVerseContext);
 
   const versesDisplay = verses.map(tokensTextRow =>
     <li>
       {tokensTextRow.tokens.map(token =>
-        <span><TokenDisplay token={token} />&nbsp;</span>
+        <span><TextFromToken token={token} />&nbsp;</span>
       )}
     </li>
   );

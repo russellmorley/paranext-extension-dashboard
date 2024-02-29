@@ -4,17 +4,17 @@ export type Func = (params: Array<any>) => any;
 export class AsyncTask {
 
   worker: Worker | undefined;
-  func: Func;
+  func: Func | undefined;
 
-  constructor(func: Func) {
-    this.func = func;
+  constructor() {
   }
 
-  run = (params: Array<any>): Promise<any> => {
+  run = (func: Func, params: Array<any>): Promise<any> => {
     return new Promise<any>((resolve, reject) => {
       if (this.worker)
         reject("Task currently in use");
 
+      this.func = func;
       // configure an inline worker script that runs this.func when a postMessage is made to it.
       const funcString = `onmessage = (e) => { postMessage(${this.func}(e.data); }"])`;
       const blob = new Blob([funcString]);
@@ -32,5 +32,6 @@ export class AsyncTask {
   stop = () => {
     this.worker?.terminate();
     this.worker = undefined;
+    this.func = undefined;
   }
 }

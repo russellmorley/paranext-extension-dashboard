@@ -1,4 +1,4 @@
-import { IPersist } from "src/shared/services/cache.service";
+import { IPersist } from "src/types/persist.type";
 
 export class IndexedDbPersist implements IPersist {
   db: IDBDatabase | undefined;

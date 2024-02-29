@@ -1,18 +1,17 @@
 import { useContext, useState } from "react";
-import {NamedPairsCollectionContext} from './namedpairs-collection-context';
+import {NamedPairs, NamedPairsCollectionContext} from './namedpairscollection.context';
 import { ApexOptions } from "apexcharts";
 import Chart from 'react-apexcharts';
-import { VerseContext } from "./verse-context";
+import { CurrentVerseContext } from "./currentverse.context";
 import papi from "@papi/frontend";
-import { NamedPairs } from "./aqua.namedpairs.datacontext";
-import { DualSlider } from "./dualslider";
+import { DualSlider } from "./dualslider.component";
 import { VerseRef } from "@sillsdev/scripture";
 
 
 
-export function AquaNamedPairsToCharts() {
+export function ChartsFromNamedPairs() {
   const namedPairsCollection = useContext(NamedPairsCollectionContext);
-  const verseRef = useContext(VerseContext);
+  const verseRef = useContext(CurrentVerseContext);
   const [leftSliderPosition, setLeftSliderPosition] = useState(.99);
   const [rightSliderPosition, setRightSliderPosition] = useState(1);
 

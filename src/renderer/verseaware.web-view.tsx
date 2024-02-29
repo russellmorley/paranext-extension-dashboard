@@ -1,10 +1,13 @@
-import {DashboardList} from "./dashboard.list";
-import { VerseContext } from './verse-context';
+import {ComponentList} from "./componentlist.component";
+import { CurrentVerseContext } from './currentverse.context';
 import { useCallback, useState } from 'react';
 import { useEvent } from '@papi/frontend/react';
 import { DashboardVerseChangeEvent, ParanextVerseChangeEvent } from 'paranext-extension-dashboard';
+import { EnvironmentContext } from "./environment.context";
+import { httpPapiFrontRequester } from "./utils/http.papifront.requester.util";
+import { AsyncTask } from "./utils/async-task.util";
 
-globalThis.webViewComponent = function DashboardWebView() {
+globalThis.webViewComponent = function VerseAwareWebView() {
   const [verseRef, setVerseRef] = useState('');
 
   useEvent<DashboardVerseChangeEvent>(
@@ -23,9 +26,13 @@ globalThis.webViewComponent = function DashboardWebView() {
     }, []),
   );
 
+  // run in paranext renderer:
+
   return (
-    <VerseContext.Provider value={verseRef}>
-      <DashboardList />
-    </VerseContext.Provider>
+    <CurrentVerseContext.Provider value={verseRef}>
+      <EnvironmentContext.Provider value={{requester: httpPapiFrontRequester, persist: undefined, asyncTask: new AsyncTask() }} >
+        <ComponentList />
+      </EnvironmentContext.Provider>
+    </CurrentVerseContext.Provider>
   );
 }

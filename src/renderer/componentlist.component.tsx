@@ -1,20 +1,20 @@
 import { AquaNamedPairsDataContext } from "./aqua.namedpairs.datacontext";
-import { AquaNamedPairsToCharts } from "./aqua.namedpairs.charts";
+import { ChartsFromNamedPairs } from "./charts.namedpairs.component";
 import { DashboardVersesDataContext } from "./dashboard.verses.datacontext";
-import { DashboardVersesVerseRangeDisplay } from "./dashboard.verses.verserangedisplay";
+import { VerseTextFromVerses } from "./versetext.verses.component";
 
-export function DashboardList() {
+export function ComponentList() {
 
   return (
     <>
       <div className="item">
         <AquaNamedPairsDataContext>
-          <AquaNamedPairsToCharts />
+          <ChartsFromNamedPairs />
         </AquaNamedPairsDataContext>
       </ div>
       <div className="item">
         <DashboardVersesDataContext>
-          <DashboardVersesVerseRangeDisplay />
+          <VerseTextFromVerses />
         </DashboardVersesDataContext>
       </ div>
     </>

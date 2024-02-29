@@ -1,11 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 
-import { CacheService, IPersist, KeysSelector, SelectorInfo } from './cache.service';
+import { CacheService, KeysSelector, SelectorInfo } from './cache.service';
 import { VerseRef, Canon } from '@sillsdev/scripture';
 import { Result, ResultsSelector } from 'paranext-extension-dashboard';
-import { AsyncLock } from 'src/shared/utils/async-lock';
+import { AsyncLock } from '../utils/async-lock.util';
+import { Requester } from '../../types/requester.type';
+import { IPersist } from 'src/types/persist.type';
 
-export type Requester = <T>(request: string, configuration?: RequestInit) => Promise<T>;
 
 // If relying on headers, see https://stackoverflow.com/a/45640164, https://web.dev/articles/introduction-to-fetch#response_types
 

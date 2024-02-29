@@ -1,12 +1,9 @@
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
-import { VerseContext } from "./verse-context";
-import { VersesContext } from "./verses-context";
-
-export type Token = {id: number, text: string};
-export type Verse = {id: number, verseRef: string, tokens: Token[]};
+import { CurrentVerseContext } from "./currentverse.context";
+import { Verse, VersesContext } from "./verses.context";
 
 export function DashboardVersesDataContext({ children } : PropsWithChildren) {
-  const verseRef = useContext(VerseContext);
+  const verseRef = useContext(CurrentVerseContext);
   const [verses, setVerses] = useState([] as Verse[]);
 
   useEffect(() => {
