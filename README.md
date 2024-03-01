@@ -1,4 +1,4 @@
-# paranext-extension-dashboard
+![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/2055e3f0-efa8-437c-8bf8-df3bf6a4b70c)![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/26b8ba4c-2de3-472b-8273-bae99b12e236)# paranext-extension-dashboard
 
 An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
@@ -67,7 +67,7 @@ This repository is structured as specified by Paranext:
 
 ### Paranext
 
-#### Example - AQuA
+#### Example - AQuA for Translators
 
 The following assembly of components results in an AQuA histogram webview that caches data for offline use and displays assessment results centered on the current Paranext verse:
 
@@ -76,13 +76,18 @@ The following assembly of components results in an AQuA histogram webview that c
     - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
       - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
-![Uploading Dashboard and Platform.bible integration strategy4-Paranext for translators w_ AQua.drawio.png…]()
+![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/721bce23-4fc1-4659-92cb-d5f2d2c4a73b)
+
+#### Example - AQuA in Translation Consultant configuration
+
+![Dashboard and Platform bible integration strategy4-Paranext For TCs drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/2a01236a-9e65-4b58-8419-09f64dfbe432)
 
 ### Dashboard
 
 #### Example - Dashboard
 
 Exactly the same as for 'Example - AQuA, with `dashboard-integration.web-view.tsx` used by a headless browser in Dashboard to provide PAPI access to Dashboard api services.
+
 
 ### Web 
 
