@@ -76,6 +76,7 @@ The following assembly of components results in an AQuA histogram webview that c
     - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
       - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
+![Uploading Dashboard and Platform.bible integration strategy4-Paranext for translators w_ AQua.drawio.png…]()
 
 ### Dashboard
 
