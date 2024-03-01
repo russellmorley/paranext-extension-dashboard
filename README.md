@@ -1,4 +1,4 @@
-![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/2055e3f0-efa8-437c-8bf8-df3bf6a4b70c)![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/26b8ba4c-2de3-472b-8273-bae99b12e236)# paranext-extension-dashboard
+# paranext-extension-dashboard
 
 An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
@@ -67,8 +67,18 @@ This repository is structured as specified by Paranext:
 
 ### Paranext
 
-#### Example - AQuA for Translators
+#### Example - AQuA in Paranext for Translators
 
+In the following example illustration, 
+
+- an AQuA heatmap and other chart visualizations sit alongside the translators' editor.
+- AQuA's heatmap visualization also includes the text itself, tokenized, with an interlinear gloss to English, and contextual enhanced resource and linguistic information as popovers from Dashboard Token Services.
+- AQuA (and other linguistic source) information is also integrated into the translator's editor itself, providing missing words as a popover and extra words underlined along with spot translations, word completion, identifying marks indicating biblical terms, enhanced resource information, ChatGPT linguistic analysis of the sentence, etc., from other cloud sources.
+- Notice how the components are the same as for other configurations, including those for both translators and translation consultants in paranext, on the web in web portals, and even in Dashboard's current application. 
+  
+![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio(1)](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/07268ed9-917f-429c-8631-7aa82b35eba1)
+
+##### Component details
 The following assembly of components results in an AQuA histogram webview that caches data for offline use and displays assessment results centered on the current Paranext verse:
 
 - `verseaware.web-view.tsx` - connects to Paranext (and Dashboard) verse change events and configures the child context environment to use `httpPapiFrontRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers) for async processing of long tasks, and `extension-storage.persist.service` for caching data to disk using `Papi.backent` (Paranext Extension Host's) `storage` service. 
@@ -76,11 +86,15 @@ The following assembly of components results in an AQuA histogram webview that c
     - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
       - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
-![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/721bce23-4fc1-4659-92cb-d5f2d2c4a73b)
+#### Example - AQuA in Paranext for Translation Consultants
 
-#### Example - AQuA in Translation Consultant configuration
+In the following example illustration, 
 
-![Dashboard and Platform bible integration strategy4-Paranext For TCs drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/2a01236a-9e65-4b58-8419-09f64dfbe432)
+- Dashboard's stacked, configurable view of the verse in various languages with alignments and glossing now sits alongside the translator's editor in Paranext itself and no longer needs to run in a separate 'Dashboard' application.
+- AQuA (and other linguistic source) information is also integrated into the translator's editor itself, providing missing words in a popover and extra words underlined, along with spot translations, word completion, identifying marks indicating biblical terms, enhanced resource information, ChatGPT linguistic analysis of the sentence, etc. from other linguistic cloud sources.
+- Notice how the components are the same as for other configurations, including those for both translators and translation consultants in paranext, on the web in web portals, and even in Dashboard's current application.
+  
+![Dashboard and Platform bible integration strategy4-Paranext For TCs drawio(1)](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/ad7938c2-f45a-454b-8622-124e769bddd5)
 
 ### Dashboard
 
