@@ -1,3 +1,5 @@
+# Dashboard Web Components for Paranext, Dashboard, and Web Portals
+
 An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
 Initial domain-specific components include those for both AQuA and Dashboard Tokenized Text, bringing AQuA's analysis, and Dashboard's Tokenized Corpora views, to Paranext, Dashboard, and the web through the same, reusable components.  
