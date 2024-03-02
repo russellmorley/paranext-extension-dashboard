@@ -1,4 +1,4 @@
-# paranext-extension-dashboard
+![Dashboard and Platform bible integration strategy4-Paranext For TCs drawio(2)](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/11323781-1806-4889-86dc-13fb961e593a)# paranext-extension-dashboard
 
 An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
@@ -76,8 +76,7 @@ In the following example illustration,
 - AQuA (and other linguistic source) information is also integrated into the translator's editor itself, providing missing words as a popover and extra words underlined along with spot translations, word completion, identifying marks indicating biblical terms, enhanced resource information, ChatGPT linguistic analysis of the sentence, etc., from other cloud sources.
 - Notice how the components are the same as for other configurations, including those for both translators and translation consultants in paranext, on the web in web portals, and even in Dashboard's current application. 
   
-![Dashboard and Platform bible integration strategy4-Paranext for translators w_ AQua drawio(2)](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/089ba110-5f6a-444f-ae1f-d102a5664efc)
-
+![Dashboard and Platform bible integration strategy-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/7ad18b2e-645d-4f74-95f6-b8ada1dc6752)
 
 ##### Component details
 The following assembly of components results in an AQuA histogram webview that caches data for offline use and displays assessment results centered on the current Paranext verse:
@@ -108,7 +107,7 @@ Exactly the same as for 'Example - AQuA, with `dashboard-integration.web-view.ts
 
 As a part of a single page app web portal that directly interacts with AQuA's machine learning endpoints using the browser's native `fetch` through `httpBrowserRequester` and persists data to the browser's native IndexedDb through `indexeddb.persist.service`. _Notice that components under `portal.tsx` are exactly the same as for Paranext and Dashboard deployement scenarios for the portal's 'histogram' charting of Results portion of overall functionality, except the developer chose to remove `componentlist.component.tsx` since a display in rows was not desired.
 
-![Dashboard and Platform bible integration strategy4-AQuA Web Portal drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/90b03e8d-20fe-4bd8-9c82-76700c815f81)
+![Dashboard and Platform bible integration strategy-AQuA Web Portal drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/fafb3a4b-32ed-4a0b-99ab-3f5ddd4ed646)
 
 ##### Component details
 
