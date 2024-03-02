@@ -1,5 +1,3 @@
-![Dashboard and Platform bible integration strategy4-Paranext For TCs drawio(2)](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/11323781-1806-4889-86dc-13fb961e593a)# paranext-extension-dashboard
-
 An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
 Initial domain-specific components include those for both AQuA and Dashboard Tokenized Text, bringing AQuA's analysis, and Dashboard's Tokenized Corpora views, to Paranext, Dashboard, and the web through the same, reusable components.  
