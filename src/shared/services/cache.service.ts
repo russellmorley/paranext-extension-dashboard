@@ -3,7 +3,8 @@ import { AsyncLock } from "../utils/async-lock.util";
 
 
 export type SelectorInfo = {
-  keyPrefix: string
+  keyPrefix: string,
+  valuesType: string,
 };
 
 export type KeysSelector<K, T> = (item: T) => K[];

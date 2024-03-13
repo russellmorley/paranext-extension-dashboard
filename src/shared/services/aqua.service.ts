@@ -11,7 +11,7 @@ import { IPersist } from 'src/types/persist.type';
 // If relying on headers, see https://stackoverflow.com/a/45640164, https://web.dev/articles/introduction-to-fetch#response_types
 
 export interface IAquaService {
-  getResults({assessment_id, book}: ResultsSelector): Promise<Result[]>;
+  getResults({assessment_id, book, aggregateByChapter}: ResultsSelector): Promise<Result[]>;
 }
 
 export class AquaService implements IAquaService {
@@ -62,11 +62,11 @@ export class AquaService implements IAquaService {
             if (keyPartOne.length > 3)
               keyPartOne = new VerseRef(keyPartOne).book;
             return [
-              `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${keyPartOne}__Results`
+              `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${keyPartOne}__${info.valuesType}`
             ];
           } else {
             return Canon.allBookIds.map(book =>
-              `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${book}__Results`
+              `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${book}__${info.valuesType}`
             );
           }
         };
@@ -99,13 +99,13 @@ export class AquaService implements IAquaService {
     this._requester = value;
   }
 
-  async getResults({assessment_id, book}: ResultsSelector): Promise<Result[]> {
+  async getResults({assessment_id, book, aggregateByChapter = false}: ResultsSelector): Promise<Result[]> {
     try {
       await this.keepGetAndSetCacheInSyncLock.promise; //wait for the lock
       this.keepGetAndSetCacheInSyncLock.lock(); //once the lock is free, grab it.
 
       let results: Result [] | undefined;
-      const info = {keyPrefix: 'assessment', valuesType: 'verseresults'} as SelectorInfo;
+      const info = {keyPrefix: 'assessment', valuesType: aggregateByChapter ? 'chapterresults' : 'verseresults'} as SelectorInfo;
       if (this.cacheService) {
         if (book)
           results = await this.cacheService.get(
@@ -119,15 +119,27 @@ export class AquaService implements IAquaService {
       }
       if (!results) {
         if (book)
-          results = (await this._requester<{results: Result[]}>(
-            `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}`,
-            this.paramsToInclude,
-          )).results;
+          if (!aggregateByChapter)
+            results = (await this._requester<{results: Result[]}>(
+              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}`,
+              this.paramsToInclude,
+            )).results;
+          else
+            results = (await this._requester<{results: Result[]}>(
+              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}&aggregate=chapter`,
+              this.paramsToInclude,
+            )).results;
         else
-          results = (await this._requester<{results: Result[]}>(
-            `${this.baseUri}/${this.result}?assessment_id=${assessment_id}`,
-            this.paramsToInclude,
-          )).results;
+          if (!aggregateByChapter)
+            results = (await this._requester<{results: Result[]}>(
+              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}`,
+              this.paramsToInclude,
+            )).results;
+          else
+            results = (await this._requester<{results: Result[]}>(
+              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&aggregate=chapter`,
+              this.paramsToInclude,
+            )).results;
         await this.cacheService?.set(
           info,
           results);

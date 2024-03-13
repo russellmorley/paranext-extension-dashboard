@@ -9,7 +9,7 @@ export function ComponentList() {
     <>
       <div className="item">
         <AquaNamedPairsDataContext>
-          <ChartsFromNamedPairs />
+          <ChartsFromNamedPairs initialSliderPositionsStdDeviationMultiple={4}/>
         </AquaNamedPairsDataContext>
       </ div>
       <div className="item">

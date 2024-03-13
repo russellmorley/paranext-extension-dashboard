@@ -3,7 +3,7 @@ declare module 'paranext-extension-dashboard' {
 
   export type Results = Result[];
 
-  export type ResultsSelector = {assessment_id: number, book?: string};
+  export type ResultsSelector = {assessment_id: number, book?: string, aggregateByChapter?: boolean};
 
   export type Result = {
     id?: number;
