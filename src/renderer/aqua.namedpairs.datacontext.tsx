@@ -93,8 +93,7 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
             }})  as [{ x: number; y: number; }]
         } as NamedPairs
       ));
-    console.log(`${min} ${max} ${mean} ${varianceAccumulator/(count - 1)} ${count}`);
-    console.log(JSON.stringify(namedPairs));
+    console.debug(`${min} ${max} ${mean} ${varianceAccumulator/(count - 1)} ${count}`);
     return {
       namedPairs: namedPairs,
       min: min,
@@ -122,7 +121,6 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
       try {
         const v = "GEN 1:5";
         const resultsForBook = await aquaService.getResults({assessment_id: parseInt(assessmentId!), book: bookFromVerseRef(v)});
-        // console.log("getResults api called");
         if (!ignore) {
           const namedPairsInfo = resultsToNamedPairsInfo(resultsForBook);
           setNamedPairsInfo(namedPairsInfo);

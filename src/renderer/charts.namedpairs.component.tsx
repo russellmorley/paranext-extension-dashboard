@@ -3,9 +3,10 @@ import {NamedPairs, NamedPairsInfo, NamedPairsInfoContext} from './namedpairsinf
 import { ApexOptions } from "apexcharts";
 import Chart from 'react-apexcharts';
 import { CurrentVerseContext } from "./currentverse.context";
-import papi from "@papi/frontend";
 import { DualSlider } from "./dualslider.component";
-import { Slider } from "papi-components";
+
+// remove once testing complete
+import papi from "@papi/frontend";
 
 export enum SliderMode {
   Ranges = 1,
@@ -167,9 +168,9 @@ export function ChartsFromNamedPairs({
     const item = document.querySelector(`.apexcharts-heatmap-rect[i='${namedPairsInfo.pairWithFocus?.x.toString()}'][j='${namedPairsInfo.pairWithFocus?.y.toString()}']`);
     if (item) {
       (item as HTMLElement).style.fill = "white";
-      console.log("found");
+      console.debug(`found element class '.apexcharts-heatmap-rect' with i=${namedPairsInfo.pairWithFocus?.x.toString()} and j=${namedPairsInfo.pairWithFocus?.y.toString()}`);
     } else {
-      console.log("not found")
+      console.error(`couldn't find element class '.apexcharts-heatmap-rect' with i=${namedPairsInfo.pairWithFocus?.x.toString()} and j=${namedPairsInfo.pairWithFocus?.y.toString()}`);
     }
     // add event handlers to each cell so parent can be informed when a Pair (cell) is clicked.
     document.querySelectorAll(`.apexcharts-heatmap-rect`).forEach(element => element.addEventListener('click', (event) => {
