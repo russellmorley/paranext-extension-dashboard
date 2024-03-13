@@ -1,4 +1,4 @@
-# paranext-extension-dashboard
+# Dashboard Web Components for Paranext, Dashboard, and Web Portals
 
 An architectural pattern with reusable components and tools for building Paranext extensions that can run in both Paranext and Dashboard as well as browser-based web applications.
 
@@ -67,8 +67,18 @@ This repository is structured as specified by Paranext:
 
 ### Paranext
 
-#### Example - AQuA
+#### Example - AQuA in Paranext for Translators
 
+In the following example illustration, 
+
+- an AQuA heatmap and other chart visualizations sit alongside the translators' editor.
+- AQuA's heatmap visualization also includes the text itself, tokenized, with an interlinear gloss to English, and contextual enhanced resource and linguistic information as popovers from Dashboard Token Services.
+- AQuA (and other linguistic source) information is also integrated into the translator's editor itself, providing missing words as a popover and extra words underlined along with spot translations, word completion, identifying marks indicating biblical terms, enhanced resource information, ChatGPT linguistic analysis of the sentence, etc., from other cloud sources.
+- Notice how the components are the same as for other configurations, including those for both translators and translation consultants in paranext, on the web in web portals, and even in Dashboard's current application. 
+  
+![Dashboard and Platform bible integration strategy-Paranext for translators w_ AQua drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/7ad18b2e-645d-4f74-95f6-b8ada1dc6752)
+
+##### Component details
 The following assembly of components results in an AQuA histogram webview that caches data for offline use and displays assessment results centered on the current Paranext verse:
 
 - `verseaware.web-view.tsx` - connects to Paranext (and Dashboard) verse change events and configures the child context environment to use `httpPapiFrontRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers) for async processing of long tasks, and `extension-storage.persist.service` for caching data to disk using `Papi.backent` (Paranext Extension Host's) `storage` service. 
@@ -76,6 +86,15 @@ The following assembly of components results in an AQuA histogram webview that c
     - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
       - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
+#### Example - AQuA in Paranext for Translation Consultants
+
+In the following example illustration, 
+
+- Dashboard's stacked, configurable view of the verse in various languages with alignments and glossing now sits alongside the translator's editor in Paranext itself and no longer needs to run in a separate 'Dashboard' application.
+- AQuA (and other linguistic source) information is also integrated into the translator's editor itself, providing missing words in a popover and extra words underlined, along with spot translations, word completion, identifying marks indicating biblical terms, enhanced resource information, ChatGPT linguistic analysis of the sentence, etc. from other linguistic cloud sources.
+- Notice how the components are the same as for other configurations, including those for both translators and translation consultants in paranext, on the web in web portals, and even in Dashboard's current application.
+  
+![Dashboard and Platform bible integration strategy4-Paranext For TCs drawio(2)](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/16d6c5c2-6755-430a-a5a4-44f8c1caa179)
 
 ### Dashboard
 
@@ -83,9 +102,14 @@ The following assembly of components results in an AQuA histogram webview that c
 
 Exactly the same as for 'Example - AQuA, with `dashboard-integration.web-view.tsx` used by a headless browser in Dashboard to provide PAPI access to Dashboard api services.
 
+
 ### Web 
 
 As a part of a single page app web portal that directly interacts with AQuA's machine learning endpoints using the browser's native `fetch` through `httpBrowserRequester` and persists data to the browser's native IndexedDb through `indexeddb.persist.service`. _Notice that components under `portal.tsx` are exactly the same as for Paranext and Dashboard deployement scenarios for the portal's 'histogram' charting of Results portion of overall functionality, except the developer chose to remove `componentlist.component.tsx` since a display in rows was not desired.
+
+![Dashboard and Platform bible integration strategy-AQuA Web Portal drawio](https://github.com/russellmorley/paranext-extension-dashboard/assets/7842248/fafb3a4b-32ed-4a0b-99ab-3f5ddd4ed646)
+
+##### Component details
 
 - `index.html` - bootstraps React, loading:
   - `portal.tsx` - configures the child context environment to use `httpBrowserRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)for async processing of long tasks, and `indexeddb.persist.service` for caching data using the browser's built-in data storage facility (IndexedDB).
