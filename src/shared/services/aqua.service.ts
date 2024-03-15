@@ -6,12 +6,18 @@ import { Result, ResultsSelector } from 'paranext-extension-dashboard';
 import { AsyncLock } from '../utils/async-lock.util';
 import { Requester } from '../../types/requester.type';
 import { IPersist } from 'src/types/persist.type';
+import { error } from 'console';
 
 
 // If relying on headers, see https://stackoverflow.com/a/45640164, https://web.dev/articles/introduction-to-fetch#response_types
 
 export interface IAquaService {
-  getResults({assessment_id, book, aggregateByChapter}: ResultsSelector): Promise<Result[]>;
+  /**
+   *
+   * @param param0
+   * @returns both the results and a string id which is different than for any other set of results
+   */
+  getResults({assessment_id, book, aggregateByChapter}: ResultsSelector): Promise<[Result[], string]>;
 }
 
 export class AquaService implements IAquaService {
@@ -59,8 +65,22 @@ export class AquaService implements IAquaService {
             });
           if (keyParts.length == 2) {
             let keyPartOne: string = item[keyParts[1] as keyof Result] as string;
-            if (keyPartOne.length > 3)
-              keyPartOne = new VerseRef(keyPartOne).book;
+            if (keyPartOne.length > 3) {
+              try {
+                keyPartOne = new VerseRef(keyPartOne).book;
+              } catch(e) {
+                console.debug(`Could not extract book using VerseRef from ${keyPartOne}: ${JSON.stringify(e)}. Trying split...`);
+                const parts = keyPartOne.split(" ");
+                if (parts.length === 2)
+                  keyPartOne = parts[0];
+                else {
+                  const errorMessage =`Could not extract book using spit from ${keyPartOne}: ${JSON.stringify(e)}`;
+                  console.error(`${errorMessage}. Throwing error.`);
+                  throw new Error(errorMessage);
+                }
+              }
+            }
+            console.debug(`${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${keyPartOne}__${info.valuesType}`);
             return [
               `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${keyPartOne}__${info.valuesType}`
             ];
@@ -99,7 +119,7 @@ export class AquaService implements IAquaService {
     this._requester = value;
   }
 
-  async getResults({assessment_id, book, aggregateByChapter = false}: ResultsSelector): Promise<Result[]> {
+  async getResults({assessment_id, book, aggregateByChapter}: ResultsSelector): Promise<[Result[], string]> {
     try {
       await this.keepGetAndSetCacheInSyncLock.promise; //wait for the lock
       this.keepGetAndSetCacheInSyncLock.lock(); //once the lock is free, grab it.
@@ -144,7 +164,7 @@ export class AquaService implements IAquaService {
           info,
           results);
       }
-      return results;
+      return [results, JSON.stringify({assessment_id, book, aggregateByChapter})];
     } finally {
       this.keepGetAndSetCacheInSyncLock.unlock();
     }

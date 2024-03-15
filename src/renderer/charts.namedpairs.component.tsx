@@ -2,24 +2,27 @@ import { useContext, useEffect, useState } from "react";
 import {NamedPairs, NamedPairsInfo, NamedPairsInfoContext} from './namedpairsinfo.context';
 import { ApexOptions } from "apexcharts";
 import Chart from 'react-apexcharts';
-import { CurrentVerseContext } from "./currentverse.context";
 import { DualSlider } from "./dualslider.component";
-
-// remove once testing complete
-import papi from "@papi/frontend";
 
 export enum SliderMode {
   Ranges = 1,
   OutsideRange
 };
 
+type ChartState = {
+  leftSliderPosition: number,
+  rightSliderPosition: number,
+  sliderMode: SliderMode,
+  namedPairsInfoId: string
+};
+
 export type ChartProps = {
   initialSliderPositionsStdDeviationMultiple?: number
   initialSliderMode?: SliderMode,
   baseChartOptions?: ApexOptions,
-  lowColor?: string,
-  mediumColor?: string,
-  highColor?: string
+  leftColor?: string,
+  middleColor?: string,
+  rightColor?: string
 }
 
 const leftSliderInitialPosition = -1;
@@ -29,10 +32,10 @@ const sliderStep = .01;
 
 export function ChartsFromNamedPairs({
   initialSliderPositionsStdDeviationMultiple = 3,
-  initialSliderMode = SliderMode.OutsideRange,
-  lowColor = "#FF0000",
-  mediumColor = "#FFFF00",
-  highColor = "#0000FF",
+  initialSliderMode = SliderMode.Ranges,
+  leftColor = "#FF0000",
+  middleColor = "#FFFF00",
+  rightColor = "#0000FF",
   baseChartOptions = {
     plotOptions: {
       heatmap: {
@@ -88,13 +91,26 @@ export function ChartsFromNamedPairs({
     },
   } as ApexOptions
 } : ChartProps) {
-  const namedPairsInfo = useContext(NamedPairsInfoContext);
-  const verseRef = useContext(CurrentVerseContext);
-  const [leftSliderPosition, setLeftSliderPosition] = useState(leftSliderInitialPosition);
-  const [rightSliderPosition, setRightSliderPosition] = useState(rightSliderInitialPosition);
-  const [sliderMode, setSliderMode] = useState(initialSliderMode);
 
-  // const [chartOptions, setChartOptions] = useState({} as ApexOptions);
+  //required context
+  const namedPairsInfo = useContext(NamedPairsInfoContext);
+
+  //state
+  const [chartState, setChartState] = useState({
+    leftSliderPosition: leftSliderInitialPosition,
+    rightSliderPosition: rightSliderInitialPosition,
+    sliderMode: initialSliderMode,
+  } as ChartState);
+
+  // re-calculates left and right slider position if namedPairsInfo.id changed (otherwise leaves them alone)
+  if (namedPairsInfo.id !== chartState.namedPairsInfoId)
+    setChartState({...chartState,
+      leftSliderPosition: namedPairsInfo.mean - namedPairsInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2,
+      rightSliderPosition: chartState.sliderMode === SliderMode.OutsideRange ?
+        namedPairsInfo.max :
+        namedPairsInfo.mean + namedPairsInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2,
+      namedPairsInfoId: namedPairsInfo.id
+    });
 
   function getChartOptions(chartOptions: ApexOptions, min: number, max: number, leftSliderPosition: number, rightSliderPosition: number): ApexOptions {
     const colorScale = chartOptions.plotOptions?.heatmap?.colorScale;
@@ -109,43 +125,31 @@ export function ChartsFromNamedPairs({
         {
           from: min,
           to: leftSliderPosition - .0000001,
-          color: lowColor,
+          color: leftColor,
           name: 'low',
         },
         {
           from: leftSliderPosition,
           to: rightSliderPosition - .0000001,
-          color: mediumColor,
+          color: middleColor,
           name: 'average',
         },
         {
           from: rightSliderPosition,
           to: max,
-          color: highColor,
+          color: rightColor,
           name: 'high',
         },
       ];
     return {...chartOptions};
   }
 
-  if (namedPairsInfo.standardDeviation !== 0 && leftSliderPosition === leftSliderInitialPosition) {
-    setLeftSliderPosition(namedPairsInfo.mean - namedPairsInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2);
-    if (sliderMode === SliderMode.OutsideRange)
-      setRightSliderPosition(namedPairsInfo.max - sliderStep);
-    else
-      setRightSliderPosition(namedPairsInfo.mean + namedPairsInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2);
-  }
-
-  //  const verseFromVerseRef = (verseRef: string | undefined): string | undefined =>
-  //   (verseRef === undefined) ? undefined : new VerseRef(verseRef).verse;
-  //  const noVerseFromVref = namedPairsCollection.map(namedPairs => namedPairs.data.filter(pair => !pair.x || pair.x.length < 1));
-
   function rangeFilter(
     min: number,
     leftPosition: number,
     rightPosition: number,
     namedPairsCollection: NamedPairs[]) {
-      if (sliderMode === SliderMode.OutsideRange)
+      if (chartState.sliderMode === SliderMode.OutsideRange)
         return namedPairsCollection.map(namedPairs => ({
           name: namedPairs.name,
           data: namedPairs.data.map(pair => ({
@@ -165,12 +169,12 @@ export function ChartsFromNamedPairs({
 
   useEffect(() => {
     // mark the focused cell
-    const item = document.querySelector(`.apexcharts-heatmap-rect[i='${namedPairsInfo.pairWithFocus?.x.toString()}'][j='${namedPairsInfo.pairWithFocus?.y.toString()}']`);
+    const item = document.querySelector(`.apexcharts-heatmap-rect[i='${namedPairsInfo.highlightedPair?.x.toString()}'][j='${namedPairsInfo.highlightedPair?.y.toString()}']`);
     if (item) {
-      (item as HTMLElement).style.fill = "white";
-      console.debug(`found element class '.apexcharts-heatmap-rect' with i=${namedPairsInfo.pairWithFocus?.x.toString()} and j=${namedPairsInfo.pairWithFocus?.y.toString()}`);
+      (item as HTMLElement).style.fill = "green";
+      console.debug(`found element class '.apexcharts-heatmap-rect' with i=${namedPairsInfo.highlightedPair?.x.toString()} and j=${namedPairsInfo.highlightedPair?.y.toString()}`);
     } else {
-      console.error(`couldn't find element class '.apexcharts-heatmap-rect' with i=${namedPairsInfo.pairWithFocus?.x.toString()} and j=${namedPairsInfo.pairWithFocus?.y.toString()}`);
+      console.error(`couldn't find element class '.apexcharts-heatmap-rect' with i=${namedPairsInfo.highlightedPair?.x.toString()} and j=${namedPairsInfo.highlightedPair?.y.toString()}`);
     }
     // add event handlers to each cell so parent can be informed when a Pair (cell) is clicked.
     document.querySelectorAll(`.apexcharts-heatmap-rect`).forEach(element => element.addEventListener('click', (event) => {
@@ -183,55 +187,66 @@ export function ChartsFromNamedPairs({
 
   return (
     <>
-      <div> Verse: {verseRef}</div>
       <div>
-        <span>Min: {Math.round(namedPairsInfo.min * 1000) / 1000}</span>&nbsp;
-        <span>Max: {Math.round(namedPairsInfo.max * 1000) / 1000}</span>&nbsp;
-        <span>Mean: {Math.round(namedPairsInfo.mean * 1000) / 1000}</span>&nbsp;
-        <span>Standard Deviation: {Math.round(namedPairsInfo.standardDeviation * 1000) / 1000}</span>&nbsp;
-        {/* <span>Outliers beyond {outliersBeyondStdDeviationMultiple} times standard deviation.</span> */}
+        <span>Min: {Math.round(namedPairsInfo.min * 1000) / 1000}</span>
+        &nbsp;
+        <span>Max: {Math.round(namedPairsInfo.max * 1000) / 1000}</span>
+        &nbsp;
+        <span>Mean: {Math.round(namedPairsInfo.mean * 1000) / 1000}</span>
+        &nbsp;
+        <span>Standard Deviation: {Math.round(namedPairsInfo.standardDeviation * 1000) / 1000}</span>
+        &nbsp;
       </div>
       <div>
         <span>
-          <button onClick={() => sliderMode === SliderMode.OutsideRange ? setSliderMode(SliderMode.Ranges) : setSliderMode(SliderMode.OutsideRange)}>{sliderMode === SliderMode.OutsideRange ? 'Outside Range' : 'Range'}</button>&nbsp;
-          <span>Left Slider Position: {leftSliderPosition}</span>&nbsp;
-          <span>Right Slider Position: {rightSliderPosition}</span>
+          <button onClick={() =>
+            setChartState({
+              ...chartState,
+              sliderMode: chartState.sliderMode === SliderMode.OutsideRange ?
+                SliderMode.Ranges :
+                SliderMode.OutsideRange
+              })
+          }>
+              {chartState.sliderMode === SliderMode.OutsideRange ? 'Outside Range' : 'Range'}
+          </button>&nbsp;
+          <span>Left Slider Position: {chartState.leftSliderPosition}</span>&nbsp;
+          <span>Right Slider Position: {chartState.rightSliderPosition}</span>
         </span>
       </div>
+      <div>Displaying: </div>
       <div>
         <DualSlider
           min={namedPairsInfo.min}
           max={namedPairsInfo.max}
-          notInRangeColor={"#dadae5"}
-          inRangeColor={"#3264fe"}
-          leftSliderPosition={leftSliderPosition}
-          rightSliderPosition={rightSliderPosition}
+          leftColor={leftColor}
+          middleColor={chartState.sliderMode === SliderMode.OutsideRange ? 'white' : middleColor}
+          rightColor={rightColor}
+          leftSliderPosition={chartState.leftSliderPosition}
+          rightSliderPosition={chartState.rightSliderPosition}
           minimumGap={minimumSliderGap}
           step={sliderStep}
           onRangeChanged={
             (leftPosition: number, rightPosition: number): void => {
-              setLeftSliderPosition(leftPosition);
-              setRightSliderPosition(rightPosition);
+              setChartState({...chartState, leftSliderPosition: leftPosition, rightSliderPosition: rightPosition});
             }
           }
         />
       </div>
       <div>
-        <Chart options={getChartOptions(baseChartOptions, namedPairsInfo.min, namedPairsInfo.max, leftSliderPosition, rightSliderPosition)} series={rangeFilter(namedPairsInfo.min, leftSliderPosition, rightSliderPosition, namedPairsInfo.namedPairs)} type="heatmap" height={800} />
-      </div>
-      <div>
-        <button
-          onClick={async () => {
-            const start = performance.now();
-            const result = await papi.commands.sendCommand(
-              'platform.paranextVerseChange',
-              'GEN 100:2000',
-              1,
-            );
-          }}
-        >
-            Trigger verse change from paranext
-        </button>
+        <Chart options={
+          getChartOptions(
+            baseChartOptions,
+            namedPairsInfo.min,
+            namedPairsInfo.max,
+            chartState.leftSliderPosition,
+            chartState.rightSliderPosition)}
+          series={rangeFilter(
+            namedPairsInfo.min,
+            chartState.leftSliderPosition,
+            chartState.rightSliderPosition,
+            namedPairsInfo.namedPairs)}
+          type="heatmap"
+          height={800} />
       </div>
     </>
   );

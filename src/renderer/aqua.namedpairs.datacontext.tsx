@@ -1,36 +1,37 @@
 import 'src/shared/utils/array-manipulations.util';
 
 import { PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
-import {NamedPairs, NamedPairsInfoContext, NamedPairsInfo, Pair} from './namedpairsinfo.context';
+import {NamedPairs, NamedPairsInfoContext, NamedPairsInfo, Pair, OnPairSelected} from './namedpairsinfo.context';
 import { AquaService } from "src/shared/services/aqua.service";
 //import { IndexedDbPersist } from "./services/indexeddb-persist.service";
 //import { httpPapiFrontRequester } from "./utils/http.papifront.requester.util";
 import {CurrentVerseContext } from "./currentverse.context";
-import { Result } from "paranext-extension-dashboard";
-import { VerseRef } from "@sillsdev/scripture";
+import { Result} from "paranext-extension-dashboard";
 import { groupBySelector } from 'src/shared/utils/array-manipulations.util';
 import { EnvironmentContext } from './environment.context';
+import { AquaMode, AquaStateManager } from './aqua.statemanager';
 
-export enum Mode {
-  VersesForChapter = 1,
-  ChaptersForBooks,
-  VerseDetails,
+export type NameType = "books" | "chapters";
+export type XType = "chapters" | "verses";
+
+export type AquaNamedPairsDataContextParams = {
+  stateManager: AquaStateManager;
 }
 
-export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
-  const verseRef = useContext(CurrentVerseContext);
+export function AquaNamedPairsDataContext({ children, stateManager } : PropsWithChildren<AquaNamedPairsDataContextParams>) {
   const environment = useContext(EnvironmentContext);
   if (!environment.requester)
     throw new Error("environment requester must be set for this service");
 
   const [namedPairsInfo, setNamedPairsInfo] = useState({
+    id: "",
     namedPairs: [],
     min: 0,
     max: 0,
     mean: 0,
     standardDeviation: 0,
-    pairWithFocus: undefined,
-    onPairSelected: (pair:Pair  | undefined) => {}
+    highlightedPair: undefined,
+    onPairSelected: () => {}
   } as NamedPairsInfo);
   const [aquaService] = useState(new AquaService(
     'https://fxmhfbayk4.us-east-1.awsapprunner.com/v2',
@@ -45,7 +46,6 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
     environment!.requester,
     environment.persist,
   ));
-  const [mode, setMode] = useState(Mode.VersesForChapter);
 
   class SettingsWebviewState {
     assessment_id: string | undefined;
@@ -59,14 +59,14 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
   if (!assessmentId || !versionId)
     return undefined;
 
-  const bookFromVerseRef = (verseRef: string | undefined): string | undefined =>
-    (verseRef === undefined) ? undefined : new VerseRef(verseRef).book;
-  const chapterFromVerseRef = (verseRef: string | undefined): string | undefined =>
-    (verseRef === undefined) ? undefined : new VerseRef(verseRef).chapter;
-  const verseFromVerseRef = (verseRef: string | undefined): number | undefined =>
-    (verseRef === undefined) ? undefined : new VerseRef(verseRef).verseNum;
+  const resultsToNamedPairsInfo = (
+    results: Result[],
+    id: string,
+    nameType: NameType,
+    xType: XType,
+    onPairSelected: OnPairSelected,
+    highlightedPair?: Pair): NamedPairsInfo => {
 
-  const resultsToNamedPairsInfo = (results: Result[]): NamedPairsInfo => {
     let min = 0;
     let max = 0;
     let mean = 0;
@@ -74,7 +74,7 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
     let count = 0;
 
     const namedPairs = Object
-      .entries(groupBySelector(results, (result: Result) => chapterFromVerseRef(result.vref)))
+      .entries(groupBySelector(results, (result: Result) => nameType === 'chapters' ? AquaStateManager.chapterFromVerseRef(result.vref) : AquaStateManager.bookFromVerseRef(result.vref)))
       .map<NamedPairs>(([name, results]) => (
         {
           name: name,
@@ -88,19 +88,20 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
                 max = result.score;
             }
             return {
-              x: verseFromVerseRef(result.vref),
+              x: xType === 'verses' ? AquaStateManager.verseNumFromVerseRef(result.vref) : AquaStateManager.chapterNumFromVerseRef(result.vref),
               y: result.score
             }})  as [{ x: number; y: number; }]
         } as NamedPairs
       ));
     console.debug(`${min} ${max} ${mean} ${varianceAccumulator/(count - 1)} ${count}`);
     return {
+      id: id,
       namedPairs: namedPairs,
       min: min,
       max: max,
       mean: mean,
       standardDeviation: Math.sqrt(varianceAccumulator / (count - 1)),
-      pairWithFocus: {x:1, y:2},
+      highlightedPair: highlightedPair,
       onPairSelected: onPairSelected
     };
   };
@@ -115,15 +116,25 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
     return [newMean, newVarianceAccumulator]
   }
 
-
   useEffect(() => {
     async function getResults() {
       try {
-        const v = "GEN 1:5";
-        const resultsForBook = await aquaService.getResults({assessment_id: parseInt(assessmentId!), book: bookFromVerseRef(v)});
-        if (!ignore) {
-          const namedPairsInfo = resultsToNamedPairsInfo(resultsForBook);
-          setNamedPairsInfo(namedPairsInfo);
+        if (stateManager.currentState.mode === AquaMode.VerseResultsForBookChapters) {
+          const [results, id] = await aquaService.getResults({assessment_id: parseInt(assessmentId!), book: stateManager.currentStateBook});
+          if (!ignore) {
+            const namedPairsInfo = resultsToNamedPairsInfo(results, id, 'chapters', 'verses', onPairSelected, stateManager.getHighlight());
+            setNamedPairsInfo(namedPairsInfo);
+          }
+        } else if (stateManager.currentState.mode === AquaMode.ChapterResultsForBooks) {
+          const [results, id] = await aquaService.getResults({assessment_id: parseInt(assessmentId!), aggregateByChapter: true});
+          if (!ignore) {
+            const namedPairsInfo = resultsToNamedPairsInfo(results, id, 'books', 'chapters', onPairSelected, stateManager.getHighlight());
+            setNamedPairsInfo(namedPairsInfo);
+          }
+        } else if (stateManager.currentState.mode === AquaMode.VerseDetails) {
+          if (!ignore) {
+
+          }
         }
       } catch(e) {
         console.error(e);
@@ -134,15 +145,15 @@ export function AquaNamedPairsDataContext({ children } : PropsWithChildren) {
     return () => {
       ignore = true;
     }
-  }, [verseRef]);
+  }, [stateManager]);
 
-  const onPairSelected = useCallback((pair:Pair  | undefined) => {
-    console.log(`x: ${pair?.x}; y:${pair?.y}`);
-    // if (!pair && mode === Mode.VersesForChapter) {
-    //   setMode(Mode.ChaptersForBooks);
-
-    // }
-  }, []);
+  const onPairSelected: OnPairSelected = useCallback((pair) => {
+    console.debug(`x: ${pair?.x}; y:${pair?.y}`);
+    if (pair) {
+      stateManager.setNextState(pair);
+      // setNamedPairsInfo({...namedPairsInfo, namedPairs: {...namedPairsInfo.namedPairs}}); //trigger a redraw in children.
+    }
+  }, [stateManager]);
 
   return (
     <>

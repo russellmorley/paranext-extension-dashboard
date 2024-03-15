@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export type SliderProps = {
   min: number;
   max: number;
-  notInRangeColor: string;
-  inRangeColor: string;
+  leftColor: string;
+  middleColor: string;
+  rightColor: string;
   leftSliderPosition: number;
   rightSliderPosition: number;
   minimumGap: number;
@@ -16,8 +17,9 @@ export function DualSlider(
   {
     min = 0,
     max = 100,
-    notInRangeColor = '#dadae5',
-    inRangeColor = '#3264fe',
+    leftColor = '#dadae5',
+    middleColor = '#3264fe',
+    rightColor = '#3264fe',
     leftSliderPosition = 25,
     rightSliderPosition = 75,
     minimumGap = 5,
@@ -34,8 +36,23 @@ export function DualSlider(
     event.preventDefault();
     onRangeChanged(leftSliderPosition, Math.max(parseFloat(event.target.value), leftSliderPosition + minimumGap));
   }
+  max = Math.ceil((max - min)/step) * step + min; //make sure step can reach max.
   const minPos = ((leftSliderPosition - min) / (max - min)) * 100;
   const maxPos = ((rightSliderPosition - min) / (max - min)) * 100;
+
+  useEffect(() => {
+    const leftTrackElement = document.querySelector('.left-track') as HTMLElement;
+    if (leftTrackElement)
+      leftTrackElement.style.background = leftColor;
+
+    const middleTrackElement = document.querySelector('.track') as HTMLElement;
+    if (middleTrackElement)
+    middleTrackElement.style.background = middleColor;
+
+    const rightTrackElement = document.querySelector('.right-track') as HTMLElement;
+    if (rightTrackElement)
+      rightTrackElement.style.background = rightColor;
+  });
 
   return (
     <div className="wrapper">
@@ -43,10 +60,9 @@ export function DualSlider(
         <div className="thumb" style={{ left: `${minPos}%` }} >
         </div>
         <div className="track" >
-          {/* <div className="inner-track" style={{ left: `${minPos}%`, right: `${100 - maxPos}%` }} > */}
-          <div className="inner-track" style={{ left: `${min}%`, right: `${100-minPos}%` }} >
+          <div className="left-track" style={{ left: `${0}%`, right: `${100-minPos}%` }} >
           </div>
-          <div className="inner-track" style={{ left: `${maxPos}%`, right: `${max}%` }} >
+          <div className="right-track" style={{ left: `${maxPos}%`, right: `${0}%` }} >
           </div>
         </div>
         <div className="thumb" style={{ left: `${maxPos}%` }} />

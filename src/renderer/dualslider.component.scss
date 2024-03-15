@@ -83,7 +83,7 @@ $thumb-size: 16px;
   height: $thumb-size;
   border-radius: 50%;
   position: absolute;
-  background: blue;
+  background: black;
   top: 50%;
   margin-left: calc(#{$thumb-size} / -2);
   transform: translate3d(0, -50%, 0);
@@ -100,9 +100,16 @@ $thumb-size: 16px;
   background: lightgrey;
 }
 
-.inner-track{
+.left-track{
   position: absolute;
   height: 100%;
   background: blue;
-  opacity: 0.5;
+  // opacity: 0.5;
+}
+
+.right-track{
+  position: absolute;
+  height: 100%;
+  background: blue;
+  // opacity: 0.5;
 }

@@ -119,26 +119,26 @@ export class CacheService<T> {
       info,
       ...Object.entries(keyValueParts as {}).map(([key, _]) => key)
     )(keyValueParts);
-    console.log(JSON.stringify(keys));
-    console.log(JSON.stringify(this.map));
+    console.debug(JSON.stringify(keys));
+    console.debug(JSON.stringify(this.map));
     const instance = this;
     let ret = await keys.reduce<Promise<Array<T>>>(async (accumulator, key) => {
       const valuesForKey = await instance.getByKey(key);
-      console.log(`valuesForKey ${valuesForKey}`);
+      console.debug(`valuesForKey ${valuesForKey} key: ${key}`);
       if (valuesForKey) {
-        console.log(`in reducer with ${accumulator} and ${key}: concatenating`);
+        console.debug(`in reducer with ${accumulator} and ${key}: concatenating`);
         (await accumulator).push(...valuesForKey);
         return accumulator;
       } else {
-        console.log(`in reducer with ${accumulator} and ${key}: NOT concatenating`);
+        console.debug(`in reducer with ${accumulator} and ${key}: NOT concatenating`);
         return accumulator;
       }
     }, new Promise<Array<T>>((resolve) => resolve(new Array<T>())));
     if (ret.length === 0) {
-      console.log('returning undefined');
+      console.debug('returning undefined');
       return undefined;
     } else {
-      console.log('returning promise');
+      console.debug('returning promise');
       return ret;
     }
   }
