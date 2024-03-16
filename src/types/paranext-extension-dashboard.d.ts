@@ -11,6 +11,8 @@ declare module 'paranext-extension-dashboard' {
     vref?: string;
     source?: string;
     target?: string;
+    revision_text?: string;
+    reference_text?: string;
     score?: number;
     flag?: boolean;
     type?: string;

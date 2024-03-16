@@ -141,7 +141,7 @@ export class AquaService implements IAquaService {
         if (book)
           if (!aggregateByChapter)
             results = (await this._requester<{results: Result[]}>(
-              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}`,
+              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}&include_text=true`,
               this.paramsToInclude,
             )).results;
           else
