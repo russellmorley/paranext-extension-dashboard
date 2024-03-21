@@ -1,6 +1,6 @@
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
 import { CurrentVerseContext } from "./currentverse.context";
-import { Verse, VersesContext } from "./verses.context";
+import { Token, TokenId, Verse, VersesContext } from "./verses.context";
 
 export function DashboardVersesDataContext({ children } : PropsWithChildren) {
   const verseRef = useContext(CurrentVerseContext);
@@ -9,25 +9,22 @@ export function DashboardVersesDataContext({ children } : PropsWithChildren) {
   useEffect(() => {
     function getVerses() {
       try {
-        const v = "GEN 1:5";
         setVerses([{
-          id: 1,
-          verseRef: verseRef,
+          verseRef: "GEN 1:1",
           tokens: [
-            {id: 1, text: 'The'},
-            {id: 2, text: 'moon'},
-            {id: 3, text: 'is'},
-            {id: 4, text: 'white.'}
+            new Token(new TokenId(1, 1, 1, 1, 1), "The", "The", 1),
+            new Token(new TokenId(1, 1, 1, 2, 1), "moon", "moon", 2),
+            new Token(new TokenId(1, 1, 1, 3, 1), "is", "is", 3),
+            new Token(new TokenId(1, 1, 1, 4, 1), "white", "white", 4),
           ]
         },
         {
-          id: 2,
-          verseRef: verseRef,
+          verseRef: "GEN 1:2",
           tokens: [
-            {id: 5, text: 'You'},
-            {id: 6, text: 'rock'},
-            {id: 7, text: 'and'},
-            {id: 8, text: 'roll.'}
+            new Token(new TokenId(1, 1, 2, 1, 1), "You", "You", 1),
+            new Token(new TokenId(1, 1, 2, 2, 1), "rock", "rock", 2),
+            new Token(new TokenId(1, 1, 2, 3, 1), "and", "and", 3),
+            new Token(new TokenId(1, 1, 2, 4, 1), "rp;;", "roll", 4),
           ]
         }]);
       } catch(e) {

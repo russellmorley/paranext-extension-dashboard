@@ -3,7 +3,7 @@ import {NamedPairs, NamedPairsInfo, NamedPairsInfoContext, Pair} from './namedpa
 import { ApexOptions } from "apexcharts";
 import Chart from 'react-apexcharts';
 import { DualSlider } from "./dualslider.component";
-import { ChartNamedPairs } from "./heatmap.namedpairs";
+import { ChartNamedPairs } from "./chart.namedpairs";
 
 export enum SliderMode {
   Ranges = 1,
@@ -34,12 +34,12 @@ const rightSliderInitialPosition = -1;
 const minimumSliderGap = .01;
 const sliderStep = .01;
 
-export function ChartsFromNamedPairs({
+export function ChartsFromNamedPairsComponent({
   chartNamedPairs,
   initialSliderPositionsStdDeviationMultiple = 3,
   initialSliderMode = SliderMode.Ranges,
   leftColor = "#FF0000",
-  middleColor = "#FFFF00",
+  middleColor = "#AC9F3C",
   rightColor = "#0000FF",
   tooltipFormatter = ({series, seriesIndex, dataPointIndex, w}): string =>
     `<div class="arrow_box">
@@ -203,69 +203,60 @@ export function ChartsFromNamedPairs({
     }));
   });
 
-  return (
-    <>
-      <div>
-        <span>Min: {Math.round(chartNamedPairs.namedPairsInfo.min * 1000) / 1000}</span>
-        &nbsp;
-        <span>Max: {Math.round(chartNamedPairs.namedPairsInfo.max * 1000) / 1000}</span>
-        &nbsp;
-        <span>Mean: {Math.round(chartNamedPairs.namedPairsInfo.mean * 1000) / 1000}</span>
-        &nbsp;
-        <span>Standard Deviation: {Math.round(chartNamedPairs.namedPairsInfo.standardDeviation * 1000) / 1000}</span>
-        &nbsp;
-      </div>
-      <div>
-        <span>
-          <button onClick={() =>
-            setChartState({
-              ...chartState,
-              sliderMode: chartState.sliderMode === SliderMode.OutsideRange ?
-                SliderMode.Ranges :
-                SliderMode.OutsideRange
-              })
-          }>
-              {chartState.sliderMode === SliderMode.OutsideRange ? 'Outside Range' : 'Range'}
-          </button>&nbsp;
-          <span>Left Slider Position: {chartState.leftSliderPosition}</span>&nbsp;
-          <span>Right Slider Position: {chartState.rightSliderPosition}</span>
-        </span>
-      </div>
-      <div>Displaying: </div>
-      <div>
-        <DualSlider
-          min={chartNamedPairs.namedPairsInfo.min}
-          max={chartNamedPairs.namedPairsInfo.max}
-          leftColor={leftColor}
-          middleColor={chartState.sliderMode === SliderMode.OutsideRange ? 'white' : middleColor}
-          rightColor={rightColor}
-          leftSliderPosition={chartState.leftSliderPosition}
-          rightSliderPosition={chartState.rightSliderPosition}
-          minimumGap={minimumSliderGap}
-          step={sliderStep}
-          onRangeChanged={
-            (leftPosition: number, rightPosition: number): void => {
-              setChartState({...chartState, leftSliderPosition: leftPosition, rightSliderPosition: rightPosition});
+  if (chartNamedPairs.namedPairsInfo.namedPairs.length < 1)
+    return null;
+  else
+    return (
+      <>
+        {/* <div>
+          <span>
+            <button onClick={() =>
+              setChartState({
+                ...chartState,
+                sliderMode: chartState.sliderMode === SliderMode.OutsideRange ?
+                  SliderMode.Ranges :
+                  SliderMode.OutsideRange
+                })
+            }>
+                {chartState.sliderMode === SliderMode.OutsideRange ? 'Outside Range' : 'Range'}
+            </button>&nbsp;
+          </span>
+        </div> */}
+        <div>
+          <DualSlider
+            min={chartNamedPairs.namedPairsInfo.min}
+            max={chartNamedPairs.namedPairsInfo.max}
+            leftColor={leftColor}
+            middleColor={chartState.sliderMode === SliderMode.OutsideRange ? 'white' : middleColor}
+            rightColor={rightColor}
+            leftSliderPosition={chartState.leftSliderPosition}
+            rightSliderPosition={chartState.rightSliderPosition}
+            minimumGap={minimumSliderGap}
+            step={sliderStep}
+            mean={chartNamedPairs.namedPairsInfo.mean}
+            onRangeChanged={
+              (leftPosition: number, rightPosition: number): void => {
+                setChartState({...chartState, leftSliderPosition: leftPosition, rightSliderPosition: rightPosition});
+              }
             }
-          }
-        />
-      </div>
-      <div>
-        <Chart options={
-          getChartOptions(
-            baseChartOptions,
-            chartNamedPairs.namedPairsInfo.min,
-            chartNamedPairs.namedPairsInfo.max,
-            chartState.leftSliderPosition,
-            chartState.rightSliderPosition)}
-          series={chartState.sliderMode === SliderMode.OutsideRange ?
-              chartNamedPairs.getNamedPairsOutsideRange(
-                chartState.leftSliderPosition,
-                chartState.rightSliderPosition) :
-              chartNamedPairs.namedPairsInfo.namedPairs}
-          type="heatmap"
-          height={800} />
-      </div>
-    </>
-  );
+          />
+        </div>
+        <div>
+          <Chart options={
+            getChartOptions(
+              baseChartOptions,
+              chartNamedPairs.namedPairsInfo.min,
+              chartNamedPairs.namedPairsInfo.max,
+              chartState.leftSliderPosition,
+              chartState.rightSliderPosition)}
+            series={chartState.sliderMode === SliderMode.OutsideRange ?
+                chartNamedPairs.getNamedPairsOutsideRange(
+                  chartState.leftSliderPosition,
+                  chartState.rightSliderPosition) :
+                chartNamedPairs.namedPairsInfo.namedPairs}
+            type="heatmap"
+            height={800} />
+        </div>
+      </>
+    );
 }

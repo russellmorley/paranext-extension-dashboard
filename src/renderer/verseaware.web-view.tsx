@@ -1,4 +1,4 @@
-import {ComponentList} from "./componentlist.component";
+import {AquaAppComponent} from "./aqua.app.component";
 import { CurrentVerseContext } from './currentverse.context';
 import { useCallback, useState } from 'react';
 import { useEvent } from '@papi/frontend/react';
@@ -53,7 +53,7 @@ globalThis.webViewComponent = function VerseAwareWebView() {
             </button>
         </div>
 
-        <ComponentList />
+        <AquaAppComponent />
       </EnvironmentContext.Provider>
     </CurrentVerseContext.Provider>
   );
