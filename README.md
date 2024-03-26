@@ -83,8 +83,8 @@ The following assembly of components results in an AQuA histogram webview that c
 
 - `verseaware.web-view.tsx` - connects to Paranext (and Dashboard) verse change events and configures the child context environment to use `httpPapiFrontRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers) for async processing of long tasks, and `extension-storage.persist.service` for caching data to disk using `Papi.backent` (Paranext Extension Host's) `storage` service. 
   - `componentlist.component.tsx` to display more than one web view in rows, and add, remove, and reorder web views (much like Dashboard's Enhanced View).
-    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
-      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
+    - `aqua.xyvalues.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's machine learning endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `XYValuesInfo`. Note that this is the only AQuA specific component in this deployment scenario.
+      - `charts.xyvalues.component.tsx` to display `XYValuesInfo` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
 #### Example - AQuA in Paranext for Translation Consultants
 
@@ -113,8 +113,8 @@ As a part of a single page app web portal that directly interacts with AQuA's ma
 
 - `index.html` - bootstraps React, loading:
   - `portal.tsx` - configures the child context environment to use `httpBrowserRequester` as the network `Requester`, `AsyncTask` (uses WebWorkers)for async processing of long tasks, and `indexeddb.persist.service` for caching data using the browser's built-in data storage facility (IndexedDB).
-    - `aqua.namedpairs.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `NamedPairs[]`. Note that this is the only AQuA specific component in this deployment scenario.
-      - `charts.namedpairs.component.tsx` to display `NamedPairs[]` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
+    - `aqua.xyvalues.datacontext.tsx` to use `aqua.service` to obtain data from AQuA's endpoints using the requester provided by the parent environment (`httpPapiFrontRequester`), cache and persist it, the latter using `IPersist` provided by the parent environment (`extension-storage.persist.service`), and make it available to child components as `XYValuesInfo`. Note that this is the only AQuA specific component in this deployment scenario.
+      - `charts.xyvalues.component.tsx` to display `XYValuesInfo` using an aggregate of a charting library and `dualslider.component.tsx` to filter data ranges.
 
 ## To install
 

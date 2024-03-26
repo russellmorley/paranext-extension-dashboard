@@ -103,8 +103,8 @@ export function ChartsFromXYValuesComponent({
 } : ChartProps) {
 
   //required context
-  const namedValuesInfo = useContext(XYValuesInfoInfoContext);
-  chartXYValues.xyValuesInfo = namedValuesInfo;
+  const xyValuesInfo = useContext(XYValuesInfoInfoContext);
+  chartXYValues.xyValuesInfo = xyValuesInfo;
 
   //state
   const [chartState, setChartState] = useState({
