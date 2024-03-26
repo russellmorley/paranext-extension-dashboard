@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import {NamedPairs, NamedPairsInfo, NamedPairsInfoContext, Pair} from './namedpairsinfo.context';
+import {XValuesForY, XYValuesInfoInfoContext, XValue} from './xyvaluesinfo.context';
 import { ApexOptions } from "apexcharts";
 import Chart from 'react-apexcharts';
 import { DualSlider } from "./dualslider.component";
-import { ChartNamedPairs } from "./chart.namedpairs";
+import { ChartXYValues } from "./chart.xyvalues";
 
 export enum SliderMode {
   Ranges = 1,
@@ -14,12 +14,12 @@ type ChartState = {
   leftSliderPosition: number,
   rightSliderPosition: number,
   sliderMode: SliderMode,
-  namedPairsInfoId: string
+  namedValuesInfoId: string
 };
 
 export type ChartProps = {
-  chartNamedPairs: ChartNamedPairs,
-  highlightedPair?: Pair,
+  chartXYValues: ChartXYValues,
+  highlightedValue?: XValue,
   initialSliderPositionsStdDeviationMultiple?: number,
   initialSliderMode?: SliderMode,
   baseChartOptions?: ApexOptions,
@@ -34,8 +34,8 @@ const rightSliderInitialPosition = -1;
 const minimumSliderGap = .01;
 const sliderStep = .01;
 
-export function ChartsFromNamedPairsComponent({
-  chartNamedPairs,
+export function ChartsFromXYValuesComponent({
+  chartXYValues,
   initialSliderPositionsStdDeviationMultiple = 3,
   initialSliderMode = SliderMode.Ranges,
   leftColor = "#FF0000",
@@ -103,8 +103,8 @@ export function ChartsFromNamedPairsComponent({
 } : ChartProps) {
 
   //required context
-  const namedPairsInfo = useContext(NamedPairsInfoContext);
-  chartNamedPairs.namedPairsInfo = namedPairsInfo;
+  const namedValuesInfo = useContext(XYValuesInfoInfoContext);
+  chartXYValues.xyValuesInfo = namedValuesInfo;
 
   //state
   const [chartState, setChartState] = useState({
@@ -113,14 +113,14 @@ export function ChartsFromNamedPairsComponent({
     sliderMode: initialSliderMode,
   } as ChartState);
 
-  // re-calculates left and right slider position if namedPairsInfo.id changed (otherwise leaves them alone)
-  if (chartNamedPairs.namedPairsInfo.id !== chartState.namedPairsInfoId)
+  // re-calculates left and right slider position if namedValuesInfo.id changed (otherwise leaves them alone)
+  if (chartXYValues.xyValuesInfo.id !== chartState.namedValuesInfoId)
     setChartState({...chartState,
-      leftSliderPosition: chartNamedPairs.namedPairsInfo.mean - chartNamedPairs.namedPairsInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2,
+      leftSliderPosition: chartXYValues.xyValuesInfo.mean - chartXYValues.xyValuesInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2,
       rightSliderPosition: chartState.sliderMode === SliderMode.OutsideRange ?
-        chartNamedPairs.namedPairsInfo.max :
-        chartNamedPairs.namedPairsInfo.mean + chartNamedPairs.namedPairsInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2,
-      namedPairsInfoId: chartNamedPairs.namedPairsInfo.id
+        chartXYValues.xyValuesInfo.max :
+        chartXYValues.xyValuesInfo.mean + chartXYValues.xyValuesInfo.standardDeviation * initialSliderPositionsStdDeviationMultiple / 2,
+      namedValuesInfoId: chartXYValues.xyValuesInfo.id
     });
 
   function getChartOptions(chartOptions: ApexOptions, min: number, max: number, leftSliderPosition: number, rightSliderPosition: number): ApexOptions {
@@ -159,51 +159,51 @@ export function ChartsFromNamedPairsComponent({
     min: number,
     leftPosition: number,
     rightPosition: number,
-    namedPairsCollection: NamedPairs[]) {
+    namedValuesCollection: XValuesForY[]) {
       if (chartState.sliderMode === SliderMode.OutsideRange)
-        return namedPairsCollection.map(namedPairs => ({
-          name: namedPairs.name,
-          data: namedPairs.data.map(pair => ({
-            x: pair.x.toString(),
-            y: pair.y >= rightPosition || pair.y <= leftPosition ? pair.y : min - 1
+        return namedValuesCollection.map(namedValues => ({
+          name: namedValues.yString,
+          data: namedValues.values.map(value => ({
+            x: value.x.toString(),
+            y: value.value >= rightPosition || value.value <= leftPosition ? value.value : min - 1
           }))
         }));
       else
-        return namedPairsCollection.map(namedPairs => ({
-          name: namedPairs.name,
-          data: namedPairs.data.map(pair => ({
-            x: pair.x,
-            y: pair.y,
-            originalDatum: pair.originalDatum
-          } as Pair))
+        return namedValuesCollection.map(namedValues => ({
+          name: namedValues.yString,
+          data: namedValues.values.map(value => ({
+            x: value.x,
+            value: value.value,
+            originalDatum: value.originalDatum
+          } as XValue))
         }));
   }
 
   useEffect(() => {
     // mark the focused cell
-    const highlightPosition = chartNamedPairs.getChartPositionFromPair(chartNamedPairs.namedPairsInfo.highlightedPair);
-    if (highlightPosition) {
-      const item = document.querySelector(`.apexcharts-heatmap-rect[i='${highlightPosition.i}'][j='${highlightPosition.j}']`);
+    const ij = chartXYValues.getIJFromXY(chartXYValues.xyValuesInfo.highlightedXY);
+    if (ij) {
+      const item = document.querySelector(`.apexcharts-heatmap-rect[i='${ij.i}'][j='${ij.j}']`);
       if (item) {
         (item as HTMLElement).style.fill = "green";
-        console.debug(`found element class '.apexcharts-heatmap-rect' with i=${highlightPosition.i} and j=${highlightPosition.j}`);
+        console.debug(`found element class '.apexcharts-heatmap-rect' with i=${ij.i} and j=${ij.j}`);
       } else {
-        console.error(`couldn't find element class '.apexcharts-heatmap-rect' with i=${highlightPosition.i} and j=${highlightPosition.j}`);
+        console.error(`couldn't find element class '.apexcharts-heatmap-rect' with i=${ij.i} and j=${ij.j}`);
       }
     }
-    // add event handlers to each cell so parent can be informed when a Pair (cell) is clicked.
+    // add event handlers to each cell so parent can be informed when a cell is clicked.
     document.querySelectorAll(`.apexcharts-heatmap-rect`).forEach(element => element.addEventListener('click', (event) => {
       const i = parseInt((event.target as HTMLElement).getAttribute('i') ?? '-1');
       const j = parseInt((event.target as HTMLElement).getAttribute('j') ?? '-1');
       if (i > -1 && j > -1) {
-        const namedPair = chartNamedPairs.getPairFromChartPosition({i:i, j:j});
-        if (namedPair)
-          chartNamedPairs.namedPairsInfo.onPairSelected(namedPair);
+        const xyOriginalDatum = chartXYValues.getXYOriginalDatumFromIJ({i:i, j:j});
+        if (xyOriginalDatum)
+          chartXYValues.xyValuesInfo.onXYSelected(xyOriginalDatum);
       }
     }));
   });
 
-  if (chartNamedPairs.namedPairsInfo.namedPairs.length < 1)
+  if (chartXYValues.xyValuesInfo.xValuesForYs.length < 1)
     return null;
   else
     return (
@@ -224,8 +224,8 @@ export function ChartsFromNamedPairsComponent({
         </div> */}
         <div>
           <DualSlider
-            min={chartNamedPairs.namedPairsInfo.min}
-            max={chartNamedPairs.namedPairsInfo.max}
+            min={chartXYValues.xyValuesInfo.min}
+            max={chartXYValues.xyValuesInfo.max}
             leftColor={leftColor}
             middleColor={chartState.sliderMode === SliderMode.OutsideRange ? 'white' : middleColor}
             rightColor={rightColor}
@@ -233,7 +233,7 @@ export function ChartsFromNamedPairsComponent({
             rightSliderPosition={chartState.rightSliderPosition}
             minimumGap={minimumSliderGap}
             step={sliderStep}
-            mean={chartNamedPairs.namedPairsInfo.mean}
+            mean={chartXYValues.xyValuesInfo.mean}
             onRangeChanged={
               (leftPosition: number, rightPosition: number): void => {
                 setChartState({...chartState, leftSliderPosition: leftPosition, rightSliderPosition: rightPosition});
@@ -245,15 +245,15 @@ export function ChartsFromNamedPairsComponent({
           <Chart options={
             getChartOptions(
               baseChartOptions,
-              chartNamedPairs.namedPairsInfo.min,
-              chartNamedPairs.namedPairsInfo.max,
+              chartXYValues.xyValuesInfo.min,
+              chartXYValues.xyValuesInfo.max,
               chartState.leftSliderPosition,
               chartState.rightSliderPosition)}
-            series={chartState.sliderMode === SliderMode.OutsideRange ?
-                chartNamedPairs.getNamedPairsOutsideRange(
+            series={ChartXYValues.toSeries(chartState.sliderMode === SliderMode.OutsideRange ?
+                chartXYValues.getXValuesForYOutsideRange(
                   chartState.leftSliderPosition,
                   chartState.rightSliderPosition) :
-                chartNamedPairs.namedPairsInfo.namedPairs}
+                chartXYValues.xyValuesInfo.xValuesForYs)}
             type="heatmap"
             height={800} />
         </div>

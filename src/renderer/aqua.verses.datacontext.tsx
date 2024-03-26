@@ -1,5 +1,4 @@
-import { PropsWithChildren, useContext, useEffect, useState } from "react";
-import { CurrentVerseContext } from "./currentverse.context";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { Token, TokenId, Verse, VersesContext } from "./verses.context";
 import { VerseRef } from "@sillsdev/scripture";
 
@@ -8,11 +7,11 @@ export type VerseText = {
   text: string
 };
 
-export type AquaNVersesDataContextParams = {
-  verseTexts: VerseText[]
+export type AquaVersesDataContextParams = {
+  verseTexts: VerseText[];
 }
 
-export function AquaVersesDataContext({ children, verseTexts } : PropsWithChildren<AquaNVersesDataContextParams>) {
+export function AquaVersesDataContext({ children, verseTexts } : PropsWithChildren<AquaVersesDataContextParams>) {
   const [verses, setVerses] = useState([] as Verse[]);
 
   const getVerses = (verseTexts: VerseText[]): Verse[] =>

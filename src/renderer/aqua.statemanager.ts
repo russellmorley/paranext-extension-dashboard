@@ -1,9 +1,8 @@
 import { Canon, VerseRef } from "@sillsdev/scripture";
-import { Pair } from "./namedpairsinfo.context";
 
 interface StateManager {
   get currentState(): {} | undefined;
-  setNextState(input: {}): void;
+  setNextState(currentStatePosition: {}): void;
   setPriorState(): void
 }
 
@@ -20,7 +19,7 @@ export abstract class BaseStateManager implements StateManager {
     return this._currentState;
   }
 
-  abstract setNextState(input: {}): void;
+  abstract setNextState(currentStatePosition: {}): void;
   abstract setPriorState(): void
 }
 
@@ -35,13 +34,14 @@ export enum AquaMode {
 export type AquaStatePosition = {
   bookNum?: number,
   chapterNum?: number,
-  verseNum?: number
+  verseNum?: number,
+  originalDatum?: any,
 };
 
 export type AquaState = {
   mode: AquaMode,
   statePosition: AquaStatePosition,
-  verseRef: string
+  verseRef: string,
 };
 
 export class AquaStateManager extends BaseStateManager {
@@ -113,13 +113,11 @@ export class AquaStateManager extends BaseStateManager {
     return super.currentState as AquaState;
   }
 
-  setNextState(pair: Pair) {
+  setNextState(currentStatePosition: AquaStatePosition) {
     if (this.currentState.mode === AquaMode.ChapterResultsForBooks) {
-      // interpret x as book, y as chapter
-      this._setState({...this.currentState, mode: AquaMode.VerseResultsForBookChapters, statePosition:{...this.currentState.statePosition, bookNum: pair.x + 1}});
+      this._setState({...this.currentState, mode: AquaMode.VerseResultsForBookChapters, statePosition:{...this.currentState.statePosition, ...currentStatePosition}} as AquaState);
     } else if (this.currentState.mode === AquaMode.VerseResultsForBookChapters) {
-      // interpret x as chapter, y as verse
-      this._setState({...this.currentState, mode: AquaMode.VerseDetails, statePosition:{...this.currentState.statePosition, chapterNum: pair.x + 1, verseNum: pair.y + 1}});
+      this._setState({...this.currentState, mode: AquaMode.VerseDetails, statePosition:{...this.currentState.statePosition, ...currentStatePosition}} as AquaState);
     } else if (this.currentState.mode === AquaMode.VerseDetails) {
       throw Error('not implemented');
     } else {
@@ -135,20 +133,13 @@ export class AquaStateManager extends BaseStateManager {
     }
   }
 
-  getHighlight(): [Pair, AquaStatePosition] | undefined{
-    const position = {
+  getHighlightStatePosition(): AquaStatePosition | undefined {
+    const aquaStatePosition  = {
       bookNum: AquaStateManager.bookNumFromVerseRef(this._verseRef),
       chapterNum: AquaStateManager.chapterNumFromVerseRef(this._verseRef),
-      verseNum: AquaStateManager.verseNumFromVerseRef(this._verseRef)};
-    if (!position.bookNum || !position.chapterNum || !position.verseNum)
-      return;
-    if (this.currentState.mode === AquaMode.VerseResultsForBookChapters) {
-      return [{x: position.chapterNum-1, y: position.verseNum-1}, position];
-    } else if (this.currentState.mode === AquaMode.ChapterResultsForBooks) {
-      return [{x: position.bookNum-1, y: position.chapterNum-1}, position];
-    } else {
-      throw Error(`invalid state, can't determine mode: ${JSON.stringify(this.currentState)}`);
+      verseNum: AquaStateManager.verseNumFromVerseRef(this._verseRef)
     }
+    return aquaStatePosition;
   }
 
   get currentStateBook(): string {

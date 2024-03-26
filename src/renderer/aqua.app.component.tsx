@@ -1,12 +1,11 @@
 import { useContext, useState } from "react";
-import { AquaNamedPairsDataContext } from "./aqua.namedpairs.datacontext";
-import { ChartsFromNamedPairsComponent } from "./charts.namedpairs.component";
-import { DashboardVersesDataContext } from "./dashboard.verses.datacontext";
+import { AquaXYValuesDataContext } from "./aqua.xyvalues.datacontext";
+import { ChartsFromXYValuesComponent } from "./charts.xyvalues.component";
 import { TokenDisplayFromVersesComponent } from "./tokendisplay.verses.component";
 import { AquaMode, AquaState, AquaStateManager } from "./aqua.statemanager";
 import { CurrentVerseContext } from "./currentverse.context";
 import { Canon } from "@sillsdev/scripture";
-import { HeatmapAscendingNamedPairs } from "./chart.namedpairs";
+import { HeatmapAscendingXYValues } from "./chart.xyvalues";
 
 import { ChakraProvider } from '@chakra-ui/react'
 import { Button, ButtonGroup } from '@chakra-ui/react'
@@ -36,9 +35,9 @@ export function AquaAppComponent() {
     header:
       undefined,
     body:
-      <AquaNamedPairsDataContext stateManager={aquaStateManager}>
-        <ChartsFromNamedPairsComponent
-          chartNamedPairs={new HeatmapAscendingNamedPairs()}
+      <AquaXYValuesDataContext stateManager={aquaStateManager}>
+        <ChartsFromXYValuesComponent
+          chartXYValues={new HeatmapAscendingXYValues()}
           initialSliderPositionsStdDeviationMultiple={4}
           tooltipFormatter={
             ({series, seriesIndex, dataPointIndex, w}) => {
@@ -50,19 +49,23 @@ export function AquaAppComponent() {
                   ${data.originalDatum?.reference_text ? `<div class="revision_text"><span>Reference text: ${data.originalDatum?.reference_text}</span></div>` : ''}
                 `
             }}/>
-      </AquaNamedPairsDataContext>,
+      </AquaXYValuesDataContext>,
     footer: undefined};
 
   const parallelTextVisualization = {
     header: undefined,
     body:
       <Text fontSize='2xl'>
-        <AquaVersesDataContext verseTexts={[{verseRef: "GEN 1:1", text: "how are you?"}]}>
+        <AquaVersesDataContext verseTexts={[{
+          verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
+          text: aquaStateManager.currentState.statePosition.originalDatum?.revision_text}]}>
           <TokenDisplayFromVersesComponent />
         </AquaVersesDataContext>
-      { true
+      { aquaStateManager.currentState.statePosition.originalDatum?.reference_text
       ?
-        <AquaVersesDataContext verseTexts={[{verseRef: "GEN 1:2", text: "I am fine!"}]}>
+        <AquaVersesDataContext verseTexts={[{
+          verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
+          text: aquaStateManager.currentState.statePosition.originalDatum?.reference_text}]}>
           <TokenDisplayFromVersesComponent />
         </AquaVersesDataContext>
       :
@@ -87,7 +90,7 @@ export function AquaAppComponent() {
       </ Card>
       <Card>
         <CardHeader>
-          <Button onClick={() => aquaStateManager.setPriorState()}>Back</Button>
+          <Button onClick={() => aquaStateManager.setPriorState()} isActive={aquaState.mode !== AquaMode.ChapterResultsForBooks}>Back</Button>
         </CardHeader>
         <CardBody>
           {visualization.body}
