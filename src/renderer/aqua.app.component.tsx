@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { AquaXYValuesDataContext } from "./aqua.xyvalues.datacontext";
 import { ChartsFromXYValuesComponent } from "./charts.xyvalues.component";
-import { TokenDisplayFromVersesComponent } from "./tokendisplay.verses.component";
+import { DisplayFromTokensTextRowsComponent } from "./display.tokenstextrows.component";
 import { AquaMode, AquaState, AquaStateManager } from "./aqua.statemanager";
 import { CurrentVerseContext } from "./currentverse.context";
 import { Canon } from "@sillsdev/scripture";
@@ -11,7 +11,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { Button, ButtonGroup } from '@chakra-ui/react'
 import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
 import { Text } from '@chakra-ui/react'
-import { AquaVersesDataContext } from "./aqua.verses.datacontext";
+import { AquaTokenTextRowsDataContext } from "./aqua.tokenstextrows.datacontext";
 
 type Visualization = {
   header?: JSX.Element,
@@ -56,18 +56,18 @@ export function AquaAppComponent() {
     header: undefined,
     body:
       <Text fontSize='2xl'>
-        <AquaVersesDataContext verseTexts={[{
+        <AquaTokenTextRowsDataContext verseTexts={[{
           verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
           text: aquaStateManager.currentState.statePosition.originalDatum?.revision_text}]}>
-          <TokenDisplayFromVersesComponent />
-        </AquaVersesDataContext>
+          <DisplayFromTokensTextRowsComponent />
+        </AquaTokenTextRowsDataContext>
       { aquaStateManager.currentState.statePosition.originalDatum?.reference_text
       ?
-        <AquaVersesDataContext verseTexts={[{
+        <AquaTokenTextRowsDataContext verseTexts={[{
           verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
           text: aquaStateManager.currentState.statePosition.originalDatum?.reference_text}]}>
-          <TokenDisplayFromVersesComponent />
-        </AquaVersesDataContext>
+          <DisplayFromTokensTextRowsComponent />
+        </AquaTokenTextRowsDataContext>
       :
         null}
       </Text>,
@@ -90,7 +90,9 @@ export function AquaAppComponent() {
       </ Card>
       <Card>
         <CardHeader>
-          <Button onClick={() => aquaStateManager.setPriorState()} isActive={aquaState.mode !== AquaMode.ChapterResultsForBooks}>Back</Button>
+          {aquaState.mode !== AquaMode.ChapterResultsForBooks && (
+            <Button onClick={() => aquaStateManager.setPriorState()}>Zoom out</Button>
+          )}
         </CardHeader>
         <CardBody>
           {visualization.body}

@@ -8,6 +8,7 @@ import { groupBySelector } from 'src/shared/utils/array-manipulations.util';
 import { EnvironmentContext } from './environment.context';
 import { AquaMode, AquaStateManager, AquaStatePosition } from './aqua.statemanager';
 import { Canon } from '@sillsdev/scripture';
+import { Spinner } from '@chakra-ui/react';
 
 export type NameType = "books" | "chapters";
 export type XType = "chapters" | "verses";
@@ -20,6 +21,8 @@ export function AquaXYValuesDataContext({ children, stateManager } : PropsWithCh
   const environment = useContext(EnvironmentContext);
   if (!environment.requester)
     throw new Error("environment requester must be set for this service");
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [xyValuesInfo, setXYValuesInfo] = useState({
     id: "",
@@ -119,6 +122,8 @@ export function AquaXYValuesDataContext({ children, stateManager } : PropsWithCh
   useEffect(() => {
     async function getResults() {
       try {
+        if (!isLoading)
+          setIsLoading(true);
         if (stateManager.currentState.mode === AquaMode.VerseResultsForBookChapters) {
           const [results, id] = await aquaService.getResults({assessment_id: parseInt(assessmentId!), book: stateManager.currentStateBook});
           if (!ignore) {
@@ -168,6 +173,9 @@ export function AquaXYValuesDataContext({ children, stateManager } : PropsWithCh
         }
       } catch(e) {
         console.error(e);
+      } finally {
+        if (!ignore)
+          setIsLoading(false);
       }
     }
     let ignore = false;
@@ -193,7 +201,11 @@ export function AquaXYValuesDataContext({ children, stateManager } : PropsWithCh
   return (
     <>
       <XYValuesInfoInfoContext.Provider value={xyValuesInfo}>
-        {children}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          children
+        )}
       </XYValuesInfoInfoContext.Provider>
     </>
   );

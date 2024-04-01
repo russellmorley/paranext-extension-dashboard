@@ -9,6 +9,8 @@ import { AsyncTask } from "./utils/async-task.util";
 
 import papi from "@papi/frontend";
 
+import { InputGroup, Input, InputRightElement, Button } from "@chakra-ui/react";
+
 globalThis.webViewComponent = function VerseAwareWebView() {
   const [verseRef, setVerseRef] = useState('GEN 1:2'); //FIXME: set back to '' once testing complete
 
@@ -37,9 +39,33 @@ globalThis.webViewComponent = function VerseAwareWebView() {
   return (
     <CurrentVerseContext.Provider value={verseRef}>
       <EnvironmentContext.Provider value={{requester: httpPapiFrontRequester, persist: undefined, asyncTask: new AsyncTask() }} >
-        <div>
-            <input onChange={handleChange} placeholder={"Enter a verse ref, e.g. GEN 1:1"}></input>
-            <button
+        <InputGroup size='md'>
+          <Input
+            style={{
+              width: '100%'
+            }}
+            pr='4.5rem'
+            type={'text'}
+            onChange={handleChange}
+            placeholder='Navigate paranext to new verse, e.g. GEN 1:1'
+          />
+          {textInput.length > 6 && (
+            <InputRightElement width='4.5rem'>
+              <Button h='1.75rem' size='sm' onClick={async () => {
+                  const start = performance.now();
+                  const result = await papi.commands.sendCommand(
+                    'platform.paranextVerseChange',
+                    textInput,
+                    1,
+                  );
+                }}>
+                {'Go'}
+              </Button>
+            </InputRightElement>
+          )}
+        </InputGroup>
+            {/* <input onChange={handleChange} placeholder={"Enter a verse ref, e.g. GEN 1:1"}></input>
+            <Button
               onClick={async () => {
                 const start = performance.now();
                 const result = await papi.commands.sendCommand(
@@ -50,9 +76,7 @@ globalThis.webViewComponent = function VerseAwareWebView() {
               }}
             >
                 Trigger verse change from paranext
-            </button>
-        </div>
-
+            </Button> */}
         <AquaAppComponent />
       </EnvironmentContext.Provider>
     </CurrentVerseContext.Provider>

@@ -39,12 +39,12 @@ export class AquaService implements IAquaService {
 
   constructor(
     baseUri: string,
-     paramsToInclude: Record<string, any>,
-     requester: Requester,
-     persist: IPersist | undefined = undefined) {
-    this.baseUri = baseUri;
-    this._paramsToInclude = paramsToInclude;
-    this._requester = requester;
+    paramsToInclude: Record<string, any>,
+    requester: Requester,
+    persist: IPersist | undefined = undefined) {
+      this.baseUri = baseUri;
+      this._paramsToInclude = paramsToInclude;
+      this._requester = requester;
 
     this.cacheService = new CacheService<Result>(
       (info: SelectorInfo, ...keyParts: Array<string>): KeysSelector<string, Result> => {

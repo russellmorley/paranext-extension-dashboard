@@ -73,17 +73,88 @@ export class Token {
     return this._surfaceTextSuffix;
   }
 
-  constructor(tokenId: TokenId, surfaceText: string, trainingText: string, position: number) {
+  get paddingBefore() {
+    return '';
+  }
+  get paddingAfter() {
+    return '';
+  }
+
+  constructor(
+    tokenId: TokenId,
+    surfaceText: string,
+    trainingText: string,
+    position: number,
+    surfaceTextPrefix: string,
+    surfaceTextSuffix: string) {
     this._tokenId = tokenId;
     this._surfaceText = surfaceText;
     this._trainingText = trainingText;
     this._position = position;
+    this._surfaceTextPrefix = surfaceTextPrefix;
+    this._surfaceTextSuffix = surfaceTextSuffix;
   }
 
   toString = (): string => `${this._surfaceTextPrefix}${this._surfaceText}${this._surfaceTextSuffix}`;
 }
 
+export class PaddedToken extends Token {
+  _paddingBefore: string;
+  _paddingAfter: string;
 
-export type Verse = {verseRef: string, tokens: Token[]};
+  constructor(paddedToken: {
+    bookNumber: number,
+    chapterNumber: number,
+    verseNumber: number,
+    wordNumber: number,
+    subWordNumber: number,
+    surfaceText: string,
+    trainingText: string,
+    position: number,
+    surfaceTextPrefix: string,
+    surfaceTextSuffix: string,
+    paddingBefore: string,
+    paddingAfter: string}) {
+  super(
+    new TokenId(
+      paddedToken.bookNumber,
+      paddedToken.chapterNumber,
+      paddedToken.verseNumber,
+      paddedToken.wordNumber,
+      paddedToken.subWordNumber),
+    paddedToken.surfaceText,
+    paddedToken.trainingText,
+    paddedToken.position,
+    paddedToken.surfaceTextPrefix,
+    paddedToken.surfaceTextSuffix);
+    this._paddingBefore = paddedToken.paddingBefore;
+    this._paddingAfter = paddedToken.paddingAfter;
+  }
 
-export const VersesContext = createContext([] as Verse[]);
+  get paddingBefore() {
+    return this._paddingBefore;
+  }
+  get paddingAfter() {
+    return this._paddingAfter;
+  }
+}
+
+export class TokensTextRow {
+  _ref: string;
+  _tokens: Token[];
+
+  constructor(tokensTextRow: {ref: string, tokens: Token[]}) {
+    this._ref = tokensTextRow.ref;
+    this._tokens = tokensTextRow.tokens;
+  }
+
+  get ref() {
+    return this._ref;
+  }
+
+  get tokens() {
+    return this._tokens;
+  }
+}
+
+export const TokensTextRowsContext = createContext([] as TokensTextRow[]);
