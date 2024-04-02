@@ -23,11 +23,12 @@ export function AquaTokenTextRowsDataContext({ children, verseTexts } : PropsWit
         tokens: verseText.text.split(" ").map(tokenText => {
           wordNumber = wordNumber + 1;
           return new PaddedToken({
-            bookNumber: vRef.bookNum,
-            chapterNumber: vRef.chapterNum,
-            verseNumber: vRef.verseNum,
-            wordNumber: wordNumber,
-            subWordNumber: 1,
+            tokenId: {
+              bookNumber: vRef.bookNum,
+              chapterNumber: vRef.chapterNum,
+              verseNumber: vRef.verseNum,
+              wordNumber: wordNumber,
+              subWordNumber: 1},
             surfaceText: tokenText,
             trainingText: tokenText,
             position: wordNumber,

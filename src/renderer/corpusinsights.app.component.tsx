@@ -23,9 +23,11 @@ export function CorpusInsightsAppComponent() {
         <CardHeader>
         </CardHeader>
         <CardBody>
-          <CorpusInsightsTokensTextRowsDataContext verseRef={verseRef}>
-            <DisplayFromTokensTextRowsComponent />
-          </CorpusInsightsTokensTextRowsDataContext>
+          <Text fontSize='2xl'>
+            <CorpusInsightsTokensTextRowsDataContext verseRef={verseRef}>
+              <DisplayFromTokensTextRowsComponent />
+            </CorpusInsightsTokensTextRowsDataContext>
+          </Text>
         </CardBody>
         <CardFooter>
           <Text fontSize='sm'>

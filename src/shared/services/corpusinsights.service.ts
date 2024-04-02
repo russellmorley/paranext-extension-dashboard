@@ -63,11 +63,12 @@ export class CorpusInsightsService {
               "ref": "GEN 1:1",
               "tokens": [
                 {
-                  "bookNumber": 1,
-                  "chapterNumber": 1,
-                  "verseNumber": 1,
-                  "wordNumber": 1,
-                  "subWordNumber": 1,
+                  "tokenId": {
+                    "bookNumber": 1,
+                    "chapterNumber": 1,
+                    "verseNumber": 1,
+                    "wordNumber": 1,
+                    "subWordNumber": 1 },
                   "position": 1,
                   "trainingText": "I",
                   "surfaceText": "I",
@@ -77,11 +78,12 @@ export class CorpusInsightsService {
                   "paddingAfter": " "
                 },
                 {
-                  "bookNumber": 1,
-                  "chapterNumber": 1,
-                  "verseNumber": 1,
-                  "wordNumber": 2,
-                  "subWordNumber": 1,
+                  "tokenId": {
+                    "bookNumber": 1,
+                    "chapterNumber": 1,
+                    "verseNumber": 1,
+                    "wordNumber": 2,
+                    "subWordNumber": 1 },
                   "position": 2,
                   "trainingText": "am",
                   "surfaceText": "am",
@@ -91,11 +93,12 @@ export class CorpusInsightsService {
                   "paddingAfter": " "
                 },
                 {
-                  "bookNumber": 1,
-                  "chapterNumber": 1,
-                  "verseNumber": 1,
-                  "wordNumber": 3,
-                  "subWordNumber": 1,
+                  "tokenId": {
+                    "bookNumber": 1,
+                    "chapterNumber": 1,
+                    "verseNumber": 1,
+                    "wordNumber": 3,
+                    "subWordNumber": 1 },
                   "position": 3,
                   "trainingText": "cool",
                   "surfaceText": "cool",
@@ -110,11 +113,12 @@ export class CorpusInsightsService {
               "ref": "GEN 1:2",
               "tokens": [
                 {
-                  "bookNumber": 1,
-                  "chapterNumber": 1,
-                  "verseNumber": 2,
-                  "wordNumber": 1,
-                  "subWordNumber": 1,
+                  "tokenId": {
+                    "bookNumber": 1,
+                    "chapterNumber": 1,
+                    "verseNumber": 2,
+                    "wordNumber": 1,
+                    "subWordNumber": 1 },
                   "position": 1,
                   "trainingText": "So",
                   "surfaceText": "So",
@@ -124,11 +128,12 @@ export class CorpusInsightsService {
                   "paddingAfter": " "
                 },
                 {
-                  "bookNumber": 1,
-                  "chapterNumber": 1,
-                  "verseNumber": 2,
-                  "wordNumber": 2,
-                  "subWordNumber": 1,
+                  "tokenId": {
+                    "bookNumber": 1,
+                    "chapterNumber": 1,
+                    "verseNumber": 2,
+                    "wordNumber": 2,
+                    "subWordNumber": 1 },
                   "position": 2,
                   "trainingText": "are",
                   "surfaceText": "are",
@@ -138,11 +143,12 @@ export class CorpusInsightsService {
                   "paddingAfter": " "
                 },
                 {
-                  "bookNumber": 1,
-                  "chapterNumber": 1,
-                  "verseNumber": 2,
-                  "wordNumber": 3,
-                  "subWordNumber": 1,
+                  "tokenId": {
+                    "bookNumber": 1,
+                    "chapterNumber": 1,
+                    "verseNumber": 2,
+                    "wordNumber": 3,
+                    "subWordNumber": 1 },
                   "position": 3,
                   "trainingText": "you",
                   "surfaceText": "you",
@@ -156,9 +162,9 @@ export class CorpusInsightsService {
           ]`;
           resolve(JSON
             .parse(tokenTextRowsJson)
-              .map((tokensTextRowObject: { ref: any; tokens: { bookNumber: any; chapterNumber: any; verseNumber: any; wordNumber: any; subWordNumber: any; position: any; trainingText: any; surfaceText: any; surfaceTextPrefix: any; surfaceTextSuffix: any; paddingBefore: any; paddingAfter: any; }[]; }) =>
+              .map((tokensTextRowObject: { ref: any; tokens: { tokenId: { bookNumber: number; chapterNumber: number; verseNumber: number; wordNumber: number; subWordNumber: number; }; surfaceText: string; trainingText: string; position: number; surfaceTextPrefix: string; surfaceTextSuffix: string; paddingBefore: string; paddingAfter: string; }[]; }) =>
                 new TokensTextRow({ref: tokensTextRowObject.ref, tokens: tokensTextRowObject.tokens
-                  .map((tokenObject: { bookNumber: any; chapterNumber: any; verseNumber: any; wordNumber: any; subWordNumber: any; position: any; trainingText: any; surfaceText: any; surfaceTextPrefix: any; surfaceTextSuffix: any; paddingBefore: any; paddingAfter: any; }) =>
+                  .map((tokenObject: { tokenId: { bookNumber: number; chapterNumber: number; verseNumber: number; wordNumber: number; subWordNumber: number; }; surfaceText: string; trainingText: string; position: number; surfaceTextPrefix: string; surfaceTextSuffix: string; paddingBefore: string; paddingAfter: string; }) =>
                     new PaddedToken(tokenObject)
                   )
                 })

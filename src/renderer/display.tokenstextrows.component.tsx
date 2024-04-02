@@ -22,8 +22,8 @@ export function DisplayFromTokensTextRowsComponent() {
 
   return (
     <>
-      <div className="verse-wrapper">
-        <div className="verse">
+      <div className="tokenstextrows">
+        <div className="tokenstextrows">
           {display}
         </div>
       </div>

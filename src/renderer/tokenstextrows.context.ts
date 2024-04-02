@@ -103,11 +103,12 @@ export class PaddedToken extends Token {
   _paddingAfter: string;
 
   constructor(paddedToken: {
-    bookNumber: number,
-    chapterNumber: number,
-    verseNumber: number,
-    wordNumber: number,
-    subWordNumber: number,
+    tokenId: {
+      bookNumber: number,
+      chapterNumber: number,
+      verseNumber: number,
+      wordNumber: number,
+      subWordNumber: number},
     surfaceText: string,
     trainingText: string,
     position: number,
@@ -117,11 +118,11 @@ export class PaddedToken extends Token {
     paddingAfter: string}) {
   super(
     new TokenId(
-      paddedToken.bookNumber,
-      paddedToken.chapterNumber,
-      paddedToken.verseNumber,
-      paddedToken.wordNumber,
-      paddedToken.subWordNumber),
+      paddedToken.tokenId.bookNumber,
+      paddedToken.tokenId.chapterNumber,
+      paddedToken.tokenId.verseNumber,
+      paddedToken.tokenId.wordNumber,
+      paddedToken.tokenId.subWordNumber),
     paddedToken.surfaceText,
     paddedToken.trainingText,
     paddedToken.position,

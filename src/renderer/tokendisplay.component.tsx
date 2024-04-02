@@ -16,17 +16,19 @@ export function TokenDisplayComponent({token, isError = false}: {token: Token, i
   const tokenStyle = {
     backgroundColor: isHover ? 'yellow' : 'rgba(0,0,0,0)',
     textDecoration: isError ? 'red wavy underline' : 'none',
+    borderWidth: isHover? 'thin' : '0',
+    cursor: 'pointer',
   };
 
   return (
     <>
       <span
         className={'token'}
-        style={tokenStyle}
         data-loc={token.tokenId.toString()}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}>
-          {token.paddingBefore}{token.surfaceTextPrefix}{token.surfaceText}{token.surfaceTextSuffix}{token.paddingAfter}
+        onMouseLeave={handleMouseLeave}
+        title={`tokenId: ${token.tokenId.toString()}; trainingText: ${token.trainingText}; surfaceText: ${token.surfaceText}`}>
+          {token.paddingBefore}{token.surfaceTextPrefix}<span style={tokenStyle}>{token.surfaceText}</span>{token.surfaceTextSuffix}{token.paddingAfter}
         </span>
     </>
   );
