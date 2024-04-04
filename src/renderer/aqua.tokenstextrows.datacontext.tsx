@@ -1,5 +1,5 @@
 import { PropsWithChildren, useEffect, useState } from "react";
-import { PaddedToken, TokensTextRow, TokensTextRowsContext } from "./tokenstextrows.context";
+import { PaddedToken, TokensTextRow, TokensTextRowsInfoContext } from "./tokenstextrows.context";
 import { VerseRef } from "@sillsdev/scripture";
 
 export type VerseText = {
@@ -8,10 +8,12 @@ export type VerseText = {
 };
 
 export type AquaTokensTextRowsDataContextParams = {
+  corpusId: string,
+  corpusName: string,
   verseTexts: VerseText[];
 }
 
-export function AquaTokenTextRowsDataContext({ children, verseTexts } : PropsWithChildren<AquaTokensTextRowsDataContextParams>) {
+export function AquaTokenTextRowsDataContext({ children, corpusId, corpusName, verseTexts } : PropsWithChildren<AquaTokensTextRowsDataContextParams>) {
   const [tokensTextRows, setTokensTextRows] = useState([] as TokensTextRow[]);
 
   const getTokensTextRows = (verseTexts: VerseText[]): TokensTextRow[] =>
@@ -47,9 +49,9 @@ useEffect(
 
   return (
     <>
-      <TokensTextRowsContext.Provider value={tokensTextRows}>
+      <TokensTextRowsInfoContext.Provider value={{corpusId: corpusId, corpusName: corpusName, tokensTextRows: tokensTextRows}}>
         {children}
-      </TokensTextRowsContext.Provider>
+      </TokensTextRowsInfoContext.Provider>
     </>
   );
 }

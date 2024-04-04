@@ -23,7 +23,7 @@ import https from 'https';
 import dashboardIntegrationServices from './renderer/dashboard-integration-services.web-view?inline';
 import dashboardWebView from './renderer/dashboard.web-view?inline';
 import dashboardWebViewStyles from './renderer/dashboard.web-view.scss?inline';
-import { AquaDataProviderEngine } from './extension-host/aqua.dataproviderengine';
+import { AquaDataProviderEngine } from './extension-host/dataproviders/aqua.dataprovider';
 
 
 import extensionDashboardAquaAnalysis from './renderer/z_extension-dashboard-aguaanalysis.web-view?inline';

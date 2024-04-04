@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 
-
 export class TokenId {
   protected _bookNumber:number;
   protected _chapterNumber: number;
@@ -149,7 +148,7 @@ export class TokensTextRow {
     this._tokens = tokensTextRow.tokens;
   }
 
-  get ref() {
+ get ref() {
     return this._ref;
   }
 
@@ -158,4 +157,6 @@ export class TokensTextRow {
   }
 }
 
-export const TokensTextRowsContext = createContext([] as TokensTextRow[]);
+export type TokensTextRowsInfo = {corpusId: string, corpusName: string, tokensTextRows: TokensTextRow[]};
+
+export const TokensTextRowsInfoContext = createContext({} as TokensTextRowsInfo);

@@ -56,18 +56,22 @@ export function AquaAppComponent() {
     header: undefined,
     body:
       <Text fontSize='2xl'>
-        <AquaTokenTextRowsDataContext verseTexts={[{
+        <AquaTokenTextRowsDataContext corpusId={'123'} corpusName={'RSV English'} verseTexts={[{
           verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
           text: aquaStateManager.currentState.statePosition.originalDatum?.revision_text}]}>
           <DisplayFromTokensTextRowsComponent />
         </AquaTokenTextRowsDataContext>
       { aquaStateManager.currentState.statePosition.originalDatum?.reference_text
       ?
-        <AquaTokenTextRowsDataContext verseTexts={[{
-          verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
-          text: aquaStateManager.currentState.statePosition.originalDatum?.reference_text}]}>
-          <DisplayFromTokensTextRowsComponent />
-        </AquaTokenTextRowsDataContext>
+        <>
+          <br/>
+          <hr/>
+          <AquaTokenTextRowsDataContext corpusId={'456'} corpusName={'Mwaghavul'} verseTexts={[{
+            verseRef: aquaStateManager.currentState.statePosition.originalDatum?.vref,
+            text: aquaStateManager.currentState.statePosition.originalDatum?.reference_text}]}>
+            <DisplayFromTokensTextRowsComponent />
+          </AquaTokenTextRowsDataContext>
+        </>
       :
         null}
       </Text>,

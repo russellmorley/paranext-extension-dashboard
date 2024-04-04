@@ -1,6 +1,5 @@
 import { PropsWithChildren, useContext, useEffect, useState } from "react";
-import { CurrentVerseContext } from "./currentverse.context";
-import { Token, TokenId, TokensTextRow, TokensTextRowsContext } from "./tokenstextrows.context";
+import { TokensTextRow, TokensTextRowsInfo, TokensTextRowsInfoContext } from "./tokenstextrows.context";
 import { EnvironmentContext } from "./environment.context";
 import { CorpusInsightsService } from "src/shared/services/corpusinsights.service";
 
@@ -14,7 +13,7 @@ export function CorpusInsightsTokensTextRowsDataContext({ children, verseRef } :
     throw new Error("environment requester must be set for this service");
 
   const [isLoading, setIsLoading] = useState(false);
-  const [tokensTextRows, setTokensTextRows] = useState([] as TokensTextRow[]);
+  const [tokensTextRowsInfo, setTokensTextRowsInfo] = useState({tokensTextRows: [] as TokensTextRow[]} as TokensTextRowsInfo);
 
   const [corpusService] = useState(new CorpusInsightsService(
     'https://fxmhfbayk4.us-east-1.awsapprunner.com/v2',
@@ -32,6 +31,7 @@ export function CorpusInsightsTokensTextRowsDataContext({ children, verseRef } :
 
   class SettingsWebviewState {
     tokenizedtextcorpus_id: string | undefined;
+    tokenizedtextcorpus_name: string | undefined;
     versesbeforenumber: string | undefined;
     versesafternumber: string | undefined;
   }
@@ -39,6 +39,7 @@ export function CorpusInsightsTokensTextRowsDataContext({ children, verseRef } :
   if (!settings)
     return undefined;
   const tokenizedTextCorpusId = settings.tokenizedtextcorpus_id;
+  const tokenizedTextCorpusName = settings.tokenizedtextcorpus_name ? settings.tokenizedtextcorpus_name : '<not set>';
   const versesBefore = settings.versesbeforenumber;
   const versesAfter = settings.versesafternumber;
   if (!tokenizedTextCorpusId)
@@ -64,9 +65,9 @@ export function CorpusInsightsTokensTextRowsDataContext({ children, verseRef } :
       try {
         if (!isLoading)
           setIsLoading(true);
-        const tokensTextRows = await corpusService.getByVerseRange(tokenizedTextCorpusId!, verseRef, versesBeforeNumber, versesAfterNumber);
+        const tokensTextRowsInfo = await corpusService.getByVerseRange(tokenizedTextCorpusId!, tokenizedTextCorpusName, verseRef, versesBeforeNumber, versesAfterNumber);
         if (!ignore) {
-          setTokensTextRows(tokensTextRows);
+          setTokensTextRowsInfo(tokensTextRowsInfo);
         }
       } catch(e) {
         console.error(e);
@@ -84,9 +85,9 @@ export function CorpusInsightsTokensTextRowsDataContext({ children, verseRef } :
 
   return (
     <>
-      <TokensTextRowsContext.Provider value={tokensTextRows}>
+      <TokensTextRowsInfoContext.Provider value={tokensTextRowsInfo}>
         {children}
-      </TokensTextRowsContext.Provider>
+      </TokensTextRowsInfoContext.Provider>
     </>
   );
 }

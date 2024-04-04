@@ -1,3 +1,4 @@
+import {registerGetTextInsightsCommand} from 'src/extension-host/commands/textinsights.command'; // register the text insights service
 import papi, { logger, DataProviderEngine } from '@papi/backend';
 import {
   ExecutionActivationContext,
@@ -16,7 +17,7 @@ import aquaWebView from './renderer/aqua.web-view?inline';
 import aquaWebViewStyles from './renderer/aqua.web-view.scss?inline';
 import corpusInsightsWebView from './renderer/corpusinsights.web-view?inline';
 import corpusInsightsWebViewStyles from './renderer/corpusinsights.web-view.scss?inline';
-import { AquaDataProviderEngine } from './extension-host/aqua.dataproviderengine';
+import { AquaDataProviderEngine } from './extension-host/dataproviders/aqua.dataprovider';
 
 
 const dashboardIntegrationWebViewType = 'dashboardintegration.webview';
@@ -118,6 +119,8 @@ export async function activate(context: ExecutionActivationContext) {
     },
   );
 
+  const registerGetTextInsightsPromise = registerGetTextInsightsCommand();
+
   papi.webViews.getWebView(dashboardIntegrationWebViewType, undefined, {existingId: '?'});
   papi.webViews.getWebView(aquaWebViewType, undefined, {existingId: '?'});
 
@@ -133,6 +136,7 @@ export async function activate(context: ExecutionActivationContext) {
     onParanextVerseChangeEmitter,
     await doDashboardVerseChangePromise,
     await doParanextVerseChangePromise,
+    await registerGetTextInsightsPromise
   );
 }
 

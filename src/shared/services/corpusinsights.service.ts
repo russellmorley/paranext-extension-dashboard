@@ -1,4 +1,4 @@
-import { PaddedToken, Token, TokensTextRow } from "src/renderer/tokenstextrows.context"
+import { PaddedToken, Token, TokensTextRow, TokensTextRowsInfo } from "src/renderer/tokenstextrows.context"
 import { Requester } from "src/types/requester.type";
 import { CacheService, KeysSelector, SelectorInfo } from "./cache.service";
 import { AsyncLock } from "../utils/async-lock.util";
@@ -50,11 +50,13 @@ export class CorpusInsightsService {
     this._requester = value;
   }
 
+
   async getByVerseRange(
     tokenizedTextCorpusId: string,
+    tokenizedTextCorpusName: string,
     verseRef: string,
     numberOfVersesInChapterBefore: number,
-    numberOfVersesInChapterAfter: number): Promise<TokensTextRow[]> {
+    numberOfVersesInChapterAfter: number): Promise<TokensTextRowsInfo> {
       try {
         let tokensTextRows: TokensTextRow[] = await new Promise<TokensTextRow[]>((resolve) => {
           const tokenTextRowsJson = `
@@ -173,7 +175,10 @@ export class CorpusInsightsService {
         // await this._requester<TokensTextRow[]>(
         //   `${this.baseUri}/${this.tokensTextRows}?tokenizedTextCorpusId=${tokenizedtextcorpus_id}&verseref=${verseRef}&versesbeforenumber=${}&versesafternumber=${numberOfVersesInChapterAfter}`,
         //   this.paramsToInclude);
-        return tokensTextRows;
+        return {
+          corpusId: tokenizedTextCorpusId,
+          corpusName: tokenizedTextCorpusName? tokenizedTextCorpusName : '<corpus name not set',
+          tokensTextRows: tokensTextRows};
       } finally {
       }
    }

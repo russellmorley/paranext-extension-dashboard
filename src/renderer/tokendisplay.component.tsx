@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Token } from "./tokenstextrows.context";
 
-
-
 export function TokenDisplayComponent({token, isError = false}: {token: Token, isError?: boolean}) {
   const [isHover, setIsHover] = useState(false);
 
@@ -24,12 +22,14 @@ export function TokenDisplayComponent({token, isError = false}: {token: Token, i
     <>
       <span
         className={'token'}
-        data-loc={token.tokenId.toString()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        data-loc={token.tokenId.toString()}
         title={`tokenId: ${token.tokenId.toString()}; trainingText: ${token.trainingText}; surfaceText: ${token.surfaceText}`}>
-          {token.paddingBefore}{token.surfaceTextPrefix}<span style={tokenStyle}>{token.surfaceText}</span>{token.surfaceTextSuffix}{token.paddingAfter}
-        </span>
+          <span>{token.paddingBefore}{token.surfaceTextPrefix}</span>
+          <span style={tokenStyle}>{token.surfaceText}  </span>
+          <span>{token.surfaceTextSuffix}{token.paddingAfter}</span>
+      </span>
     </>
   );
 }
