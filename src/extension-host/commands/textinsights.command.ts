@@ -1,17 +1,26 @@
-import papi, { logger } from "@papi/backend";
-import { TextInsights, TextInsightsService, TokenInfo } from "src/shared/services/textinsights.service";
+import papi from "@papi/backend";
+import { TextInsight, TextInsightsService, TokenInfo } from "src/shared/services/textinsights.service";
 
-export type GetTextInsightsCompleteEvent = TextInsights;
+const onGetTextInsightEmitter =
+  papi.network.createNetworkEventEmitter<TextInsight>('textinsights.get');
 
 const onGetTextInsightsCompleteEmitter =
-papi.network.createNetworkEventEmitter<GetTextInsightsCompleteEvent>('textinsights.get');
+  papi.network.createNetworkEventEmitter<void>('textinsights.getcomplete');
 
 const textInsightsService = new TextInsightsService();
 
 export const registerGetTextInsightsCommand = () => papi.commands.registerCommand(
   'textinsights.get',
   async (tokenInfos: TokenInfo[]) => {
-    const textInsights = await textInsightsService.get(tokenInfos);
-    onGetTextInsightsCompleteEmitter.emit(textInsights);
+    const textInsights = textInsightsService.get(tokenInfos);
+    let textInsightsPendingCount = textInsights.length;
+
+    textInsights.forEach(async textInsight => {
+      await textInsight.retrieveResult();
+      onGetTextInsightEmitter.emit(textInsight);
+      textInsightsPendingCount--;
+      if (textInsightsPendingCount === 0)
+        onGetTextInsightsCompleteEmitter.emit();
+    })
   },
 );

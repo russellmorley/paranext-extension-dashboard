@@ -1,18 +1,19 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { TokensTextRowsInfoContext } from "./tokenstextrows.context";
 import { TokenDisplayComponent } from "./tokendisplay.component";
 import papi from "@papi/frontend";
-import { TextInsights, TokenInfo } from "src/shared/services/textinsights.service";
+import { TextInsight, TokenInfo } from "src/shared/services/textinsights.service";
 import { useEvent } from "@papi/frontend/react";
-import { GetTextInsightsCompleteEvent } from "src/extension-host/commands/textinsights.command";
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, Spinner, useDisclosure } from "@chakra-ui/react";
+import { DisplayFromTextInsights } from "./display.textinsights.component";
+import { useDisclosure } from "@chakra-ui/react";
 
 
 export function DisplayFromTokensTextRowsComponent() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const tokensTextRowsInfo = useContext(TokensTextRowsInfoContext);
-  const [isLoading, setIsLoading] = useState(false);
-  const [textInsights, setTextInsights] = useState({} as TextInsights)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [textInsightsOpen, setTextInsightsOpen] = useState(false);
+  const [textInsights, setTextInsights] = useState([] as TextInsight[])
+  const [textInsightsGetComplete, setInsightsGetComplete] = useState(false);
 
   const display = tokensTextRowsInfo.tokensTextRows.map(tokensTextRow =>
     <li key={tokensTextRow.ref} style={{listStyleType:"none"}}>
@@ -22,19 +23,26 @@ export function DisplayFromTokensTextRowsComponent() {
       <div>
         <span data-ref={tokensTextRow.ref}>
           {tokensTextRow.tokens.map(token =>
-            <TokenDisplayComponent token={token} isError={Math.random() > .95} />
+            <TokenDisplayComponent key={token.tokenId.toString()} token={token} isError={Math.random() > .95} />
           )}
         </span>
       </div>
     </li>
   );
 
-  useEvent<GetTextInsightsCompleteEvent>(
+  useEvent<TextInsight>(
     'textinsights.get',
-      useCallback((textInsightsCompeteEvent: GetTextInsightsCompleteEvent) => {
-        console.debug(`Received text insights ${JSON.stringify(textInsightsCompeteEvent)}`);
-        setIsLoading(false);
-        setTextInsights(textInsightsCompeteEvent);
+      useCallback(async (textInsight: TextInsight) => {
+        console.debug(`Received text insight ${JSON.stringify(textInsight)}`);
+        setTextInsights(textInsights.concat(textInsight));
+      }, [textInsights]),
+  );
+
+  useEvent<TextInsight>(
+    'textinsights.getcomplete',
+      useCallback(() => {
+        console.debug(`Received all text insights complete`);
+        setInsightsGetComplete(true);
       }, []),
   );
 
@@ -71,20 +79,14 @@ export function DisplayFromTokensTextRowsComponent() {
       }
     }
     console.debug(JSON.stringify(selectedTokenInfos));
-    setTextInsights({} as TextInsights);
-    setIsLoading(true);
+    setTextInsights([] as TextInsight[]);
     onOpen();
+    setTextInsightsOpen(true);
     const result = await papi.commands.sendCommand(
       'textinsights.get',
       selectedTokenInfos
     );
   }
-
-  const onCloseCustom = () => {
-    onClose();
-    // setIsLoading(false);
-    // setTextInsights({} as TextInsights);
-  };
 
   return (
     <>
@@ -94,38 +96,7 @@ export function DisplayFromTokensTextRowsComponent() {
       <div className="tokenstextrows" onMouseUp={onMouseUp}>
         {display}
       </div>
-      <Drawer
-        isOpen={isOpen}
-        placement='right'
-        onClose={onCloseCustom}
-        // finalFocusRef={btnRef}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>
-            {isLoading ? (
-              <Spinner></Spinner>
-            ) : (
-              textInsights?.tokenInfos
-                ?.map(tokenInfo => tokenInfo.text)
-                ?.reduce((accumulator, current) => `${accumulator}${current}`)
-            )}
-          </DrawerHeader>
-          <DrawerBody>
-            {isLoading ? (
-                <Spinner></Spinner>
-              ) : (
-                JSON.stringify(textInsights.insights)
-              )}
-          </DrawerBody>
-          <DrawerFooter>
-            <Button variant='outline' mr={3} onClick={onCloseCustom}>
-              Cancel
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <DisplayFromTextInsights textInsights={textInsights} isOpen={isOpen} onClose={onClose} allTextInsightsIncluded={textInsightsGetComplete}></DisplayFromTextInsights>
     </>
   );
 }
