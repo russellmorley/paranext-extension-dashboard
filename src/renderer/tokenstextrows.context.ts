@@ -38,7 +38,8 @@ export class TokenId {
       this._subWordNumber = subWordNumber;
   }
 
-  toString = () => `${('00000' + this._bookNumber.toString()).slice(-3)}${('00000' + this._chapterNumber.toString()).slice(-3)}${('00000' + this._verseNumber.toString()).slice(-3)}${('00000' + this._wordNumber.toString()).slice(-3)}${('00000' + this._subWordNumber.toString()).slice(-3)}`;
+  toString = () =>
+    `${('00000' + this._bookNumber.toString()).slice(-3)}${('00000' + this._chapterNumber.toString()).slice(-3)}${('00000' + this._verseNumber.toString()).slice(-3)}${('00000' + this._wordNumber.toString()).slice(-3)}${('00000' + this._subWordNumber.toString()).slice(-3)}`;
 }
 
 export class Token {
