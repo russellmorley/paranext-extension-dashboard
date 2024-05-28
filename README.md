@@ -181,9 +181,9 @@ Execute `npm start` in the base directory in which you installed this repository
 1.  change directory to `paranext-extension-dashboard` from your parent repo directory (the directory that contains both `paranext-extension-dashboard` and `paranext-core`).
 2. edit `src/shared/services/textinsights.service.ts` line 290, replacing Bearer [TOKEN..] 
 3. `npm run start:PAPI-standalone`
-4. 
-  1. Open a browser tab and navigate to http://localhost:1212/aqua_webview?assessment_id=211&version_id=71 to view the AQuA web app.
-  2. Open another browser tab and navigate to http://localhost:1212/corpusinsights_webview?tokenizedtextcorpus_id=32&verseref=GEN%201%3A4&versesbeforenumber=0&versesafternumber=0 to view the tokenized corpus webview.
+4. Navigate browser:
+    1. Open a browser tab and navigate to http://localhost:1212/aqua_webview?assessment_id=211&version_id=71 to view the AQuA web app.
+    2. Open another browser tab and navigate to http://localhost:1212/corpusinsights_webview?tokenizedtextcorpus_id=32&verseref=GEN%201%3A4&versesbeforenumber=0&versesafternumber=0 to view the tokenized corpus webview.
 
 ## Notes about Paranext Webviews
 
