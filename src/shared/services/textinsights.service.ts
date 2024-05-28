@@ -251,8 +251,8 @@ export class TranslateTextInsight extends TextInsight {
 
 export abstract class ChatGptTextInsight extends TextInsight {
   protected chatPrompt: string;
-  constructor(tokenInfos: TokenInfo[], description: string, chatPrompt: string) {
-    super(tokenInfos, description, 'ChatGPT', 'ChatGptTextInsight');
+  constructor(tokenInfos: TokenInfo[], description: string, chatPrompt: string, type: string) {
+    super(tokenInfos, description, 'ChatGPT', type);
     this.chatPrompt = chatPrompt;
   }
 
@@ -264,13 +264,30 @@ export abstract class ChatGptTextInsight extends TextInsight {
   }
 
   async retrieveResult(): Promise<boolean> {
-    const url = 'https://chatgpt-best-price.p.rapidapi.com/v1/chat/completions';
+    // const url = 'https://chatgpt-best-price.p.rapidapi.com/v1/chat/completions';
+    // const options = {
+    //   method: 'POST',
+    //   headers: {
+    //     'content-type': 'application/json',
+    //     'X-RapidAPI-Key': 'a6f84ec510msh8a31a754a06bcd5p1562ccjsna1fc96b3f41f',
+    //     'X-RapidAPI-Host': 'chatgpt-best-price.p.rapidapi.com'
+    //   },
+    //   body: JSON.stringify({
+    //     model: 'gpt-3.5-turbo',
+    //     messages: [
+    //       {
+    //         role: 'user',
+    //         content: this.chatPrompt
+    //       }
+    //     ]
+    //   })
+    // };
+    const url = 'https://api.openai.com/v1/chat/completions';
     const options = {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': 'a6f84ec510msh8a31a754a06bcd5p1562ccjsna1fc96b3f41f',
-        'X-RapidAPI-Host': 'chatgpt-best-price.p.rapidapi.com'
+        'Authorization': 'Bearer [TOKEN]'
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
@@ -337,13 +354,28 @@ export abstract class ChatGptTextInsight extends TextInsight {
   }
 }
 
+export class TestPrompt extends ChatGptTextInsight {
+  constructor(tokenInfos: TokenInfo[]) {
+    if (tokenInfos.length > 0) {
+      super(
+        tokenInfos,
+        "Pronominal references:",
+        `say hello`,
+        'PronominalReferencesChatGptTextInsight');
+    } else {
+      throw new Error('tokenInfos length is zero');
+    }
+  }
+}
+
 export class PronominalReferencesChatGptTextInsight extends ChatGptTextInsight {
     constructor(tokenInfos: TokenInfo[]) {
     if (tokenInfos.length > 0) {
       super(
         tokenInfos,
         "Pronominal references:",
-        `Identify the pronouns in ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} and tell me who or what they refer to, or say 'verse ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} contains no pronouns' if there aren't any.`);
+        `Identify the pronouns in ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} and tell me who or what they refer to, or say 'verse ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} contains no pronouns' if there aren't any.`,
+        'PronominalReferencesChatGptTextInsight');
     } else {
       throw new Error('tokenInfos length is zero');
     }
@@ -356,7 +388,8 @@ export class VerseReferencesChatGptTextInsight extends ChatGptTextInsight {
       super(
         tokenInfos,
         "Verse references:",
-        `If ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} makes reference to other verses in the bible please tell me what they are and what they make reference to, otherwise say: no other verses are referenced in verse ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()}.`);
+        `If ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} makes reference to other verses in the bible please tell me what they are and what they make reference to, otherwise say: no other verses are referenced in verse ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()}.`,
+        "VerseReferencesChatGptTextInsight");
     } else {
       throw new Error('tokenInfos length is zero');
     }
@@ -369,7 +402,8 @@ export class VerseInterpretationsChatGptTextInsight extends ChatGptTextInsight {
       super(
         tokenInfos,
         "Verse interpretations:",
-        `Tell me the various interpretations of ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} and tell me who made them.`);
+        `Tell me the various interpretations of ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} and tell me who made them.`,
+        "VerseInterpretationsChatGptTextInsight");
     } else {
       throw new Error('tokenInfos length is zero');
     }
@@ -382,7 +416,8 @@ export class VerseSummaryInChapterChatGptTextInsight extends ChatGptTextInsight 
       super(
         tokenInfos,
         "Summary of verse:",
-        `Summarize ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} in terms of the rest of its containing chapter`);
+        `Summarize ${ChatGptTextInsight.getVerseRef(tokenInfos[0].location!).toString()} in terms of the rest of its containing chapter`,
+        "VerseSummaryInChapterChatGptTextInsight");
     } else {
       throw new Error('tokenInfos length is zero');
     }
@@ -398,10 +433,12 @@ export class TextInsightsService implements ITextInsightsService {
     if (tokenInfos.length > 0) {
       const textInsights = [
         new TranslateTextInsight(tokenInfos),
-        new VerseReferencesChatGptTextInsight(tokenInfos),
-        new PronominalReferencesChatGptTextInsight(tokenInfos),
+
+        //new VerseReferencesChatGptTextInsight(tokenInfos),
+        //new PronominalReferencesChatGptTextInsight(tokenInfos),
         new VerseInterpretationsChatGptTextInsight(tokenInfos),
-        new VerseSummaryInChapterChatGptTextInsight(tokenInfos)
+        //new VerseSummaryInChapterChatGptTextInsight(tokenInfos)
+        //new TestPrompt(tokenInfos)
       ];
       return textInsights;
     } else {
