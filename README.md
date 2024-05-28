@@ -60,7 +60,7 @@ This repository is structured as specified by Paranext:
 - `shared` _(for both **BrowserApps** and **ParanextExtensionHost** extensions)_
   - `services`
     - `shared/services/[app name].service` _(service interface for AQuA, which uses an implementation of `Requester` to make requests to AQuA's endpoints and `IPersist` to support persistent caching through `cache.service`)_
-      - `shared/services/cache.service` _(provides caching for services. Uses an implementation of `IPersist` for persistent storage as configured by the environment context, e.g. indexeddb for web portals, extension-storage.persist.service for paranext extensions)_
+    - `shared/services/cache.service` _(provides caching for services. Uses an implementation of `IPersist` for persistent storage as configured by the environment context, e.g. indexeddb for web portals, extension-storage.persist.service for paranext extensions)_
   - `services/utils`
     - `shared//services/async-lock.util` _(a JS promise-based non-blocking lock for synchronizing in-process async operations, e.g. syncing `aqua.service` remote and cache updates, and `cache.service` updates to shared map and `IPersist`)_
     - `array-manipulations.util` _(utilities for processing arrays, e.g. `groupBy()`)_
@@ -134,8 +134,8 @@ As a part of a single page app web portal that directly interacts with AQuA's ma
 
 1. Clone [this repository](https://github.com/russellmorley/paranext-extension-dashboard)
 2. Run `npm install`
-3. Clone to sibling directory [paranext-core](https://github.com/paranext/paranext-core), 
-4. follow (instructions in readme)[https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install], including
+3. Clone [paranext-core](https://github.com/paranext/paranext-core) to sibling directory `paranext-core` , 
+4. follow [instructions in readme](https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install), including
 running `npm install`.
 
   #### To package for production
