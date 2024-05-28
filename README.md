@@ -149,11 +149,12 @@ To package your extension into a zip file for distribution:
 
   #### Development
 
-1. Clone and build [`Dashboard, Paranext Branch`](https://github.com/Clear-Bible/ClearDashboard/tree/paranext)
-2. Clone [this repository](https://github.com/russellmorley/paranext-extension-dashboard)
-3. Run `npm install`
-4. Clone to sibling directory [`PAPI Core (standalone), Dashboard Branch`](https://github.com/russellmorley/paranext-core/tree/dashboard), 
-5. follow (instructions at)[https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install], including
+1. Clone, switch to the `paranext` branch, and build [`Dashboard, Paranext Branch`](https://github.com/Clear-Bible/ClearDashboard/tree/paranext)
+1. Clone [this repository](https://github.com/russellmorley/paranext-extension-dashboard)
+2. `cd paranext-extension-dashboard` and run `npm install`.
+3. `cd ..` and then `git clone https://github.com/russellmorley/paranext-core` (should create a sibling directory `paranext-core`) , 
+4. `cd paranext-core` and then `git checkout dashboard` (Switch to the 'dashboard' branch)
+5. follow [instructions in readme](https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install), including
 running `npm install`.
 
   ### Browser Apps
@@ -174,6 +175,15 @@ Execute `npm start` in the base directory in which you installed this repository
   ### Browser Apps
 
 (Dependent on packaging and deployment approach)
+
+  ### Test in browser
+
+1.  change directory to `paranext-extension-dashboard` from your parent repo directory (the directory that contains both `paranext-extension-dashboard` and `paranext-core`).
+2. edit `src/shared/services/textinsights.service.ts` line 290, replacing Bearer [TOKEN..] 
+3. `npm run start:PAPI-standalone`
+4. 
+  1. Open a browser tab and navigate to http://localhost:1212/aqua_webview?assessment_id=211&version_id=71 to view the AQuA web app.
+  2. Open another browser tab and navigate to http://localhost:1212/corpusinsights_webview?tokenizedtextcorpus_id=32&verseref=GEN%201%3A4&versesbeforenumber=0&versesafternumber=0 to view the tokenized corpus webview.
 
 ## Notes about Paranext Webviews
 
