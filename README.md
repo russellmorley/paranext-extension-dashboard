@@ -133,9 +133,10 @@ As a part of a single page app web portal that directly interacts with AQuA's ma
   #### Development
 
 1. Clone [this repository](https://github.com/russellmorley/paranext-extension-dashboard)
-2. Run `npm install`
-3. Clone [paranext-core](https://github.com/paranext/paranext-core) to sibling directory `paranext-core` , 
-4. follow [instructions in readme](https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install), including
+2. `cd paranext-extension-dashboard` and run `npm install`.
+3. `cd ..` and then clone [paranext-core](https://github.com/russellmorley/paranext-core) (should create a sibling directory `paranext-core`) , 
+4. `cd paranext-core` and then `git checkout dashboard` (Switch to the 'dashboard' branch)
+5. follow [instructions in readme](https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install), including
 running `npm install`.
 
   #### To package for production
@@ -149,7 +150,7 @@ To package your extension into a zip file for distribution:
   #### Development
 
 1. Clone and build [`Dashboard, Paranext Branch`](https://github.com/Clear-Bible/ClearDashboard/tree/paranext)
-2. Clone [`this repository](https://github.com/russellmorley/paranext-extension-dashboard)
+2. Clone [this repository](https://github.com/russellmorley/paranext-extension-dashboard)
 3. Run `npm install`
 4. Clone to sibling directory [`PAPI Core (standalone), Dashboard Branch`](https://github.com/russellmorley/paranext-core/tree/dashboard), 
 5. follow (instructions at)[https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install], including
