@@ -1,12 +1,9 @@
 import papi, { logger } from '@papi/frontend';
-import { useEvent } from '@papi/frontend/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEvent } from 'platform-bible-react';
+import { useCallback } from 'react';
 import type { ParanextVerseChangeEvent } from 'paranext-extension-dashboard';
-import { request } from 'http';
-import { setgroups } from 'process';
 
 globalThis.webViewComponent = function DashboardIntegration() {
-
   useEvent<ParanextVerseChangeEvent>(
     'platform.paranextVerseChange',
     useCallback(async ({ verseRefString, verseOffsetIncluded }) => {

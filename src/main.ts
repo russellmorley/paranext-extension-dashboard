@@ -1,5 +1,5 @@
 import { registerGetTextInsightsCommand } from 'src/extension-host/commands/textinsights.command'; // register the text insights service
-import papi, { logger, DataProviderEngine } from '@papi/backend';
+import papi, { logger } from '@papi/backend';
 import {
   ExecutionActivationContext,
   IWebViewProvider,
