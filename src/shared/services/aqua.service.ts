@@ -1,13 +1,9 @@
-/* eslint-disable no-underscore-dangle */
-
-import { CacheService, KeysSelector, SelectorInfo } from './cache.service';
-import { VerseRef, Canon } from '@sillsdev/scripture';
-import { Result, ResultsSelector } from 'paranext-extension-dashboard';
-import { AsyncLock } from '../utils/async-lock.util';
-import { Requester } from '../../types/requester.type';
 import { IPersist } from 'src/types/persist.type';
-import { error } from 'console';
-
+import { VerseRef, Canon } from '@sillsdev/scripture';
+import type { Result, Results, ResultsSelector } from 'paranext-extension-dashboard';
+import { Mutex } from 'platform-bible-utils';
+import { CacheService, KeysSelector, SelectorInfo } from './cache.service';
+import { Requester } from '../../types/requester.type';
 
 // If relying on headers, see https://stackoverflow.com/a/45640164, https://web.dev/articles/introduction-to-fetch#response_types
 
@@ -17,81 +13,92 @@ export interface IAquaService {
    * @param param0
    * @returns both the results and a string id which is different than for any other set of results
    */
-  getResults({assessment_id, book, aggregateByChapter}: ResultsSelector): Promise<[Result[], string]>;
+  getResults({ assessmentId, book, aggregateByChapter }: ResultsSelector): Promise<Results>;
 }
 
 export class AquaService implements IAquaService {
   // endpoints
+  /*
   private readonly version: string = 'version';
   private readonly language: string = 'language';
   private readonly script: string = 'script';
 
   private readonly revision: string = 'revision';
   private readonly assessment: string = 'assessment';
+  */
   private readonly result: string = 'result';
 
   // configuration
   private baseUri: string;
-  private _paramsToInclude: Record<string, any>;
-  private _requester: Requester;
+  // TODO: pick a better type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private paramsToIncludeInternal: Record<string, any>;
+  private requesterInternal: Requester;
   private cacheService: CacheService<Result> | undefined;
-  private keepGetAndSetCacheInSyncLock = new AsyncLock();
+  private keepGetAndSetCacheInSyncLock = new Mutex();
 
   constructor(
     baseUri: string,
+    // TODO: pick a better type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     paramsToInclude: Record<string, any>,
     requester: Requester,
-    persist: IPersist | undefined = undefined) {
-      this.baseUri = baseUri;
-      this._paramsToInclude = paramsToInclude;
-      this._requester = requester;
+    persist: IPersist | undefined = undefined,
+  ) {
+    this.baseUri = baseUri;
+    this.paramsToIncludeInternal = paramsToInclude;
+    this.requesterInternal = requester;
 
     this.cacheService = new CacheService<Result>(
-      (info: SelectorInfo, ...keyParts: Array<string>): KeysSelector<string, Result> => {
-        if (keyParts.length > 0 && keyParts[0] !== 'assessment_id')
+      (info: SelectorInfo, ...keyParts: Array<keyof Result>): KeysSelector<string, Result> => {
+        if (keyParts.length > 0 && keyParts[0] !== 'assessmentId')
           throw new Error("First keyPart must be included and be 'assessment_id'");
         if (keyParts.length > 1 && keyParts[1] !== 'vref')
           throw new Error("If included, second keyPart must be 'vref'");
         if (keyParts.length > 2)
-          throw new Error("Must have keyParts 'assessment_id' and at most additionally, but optionally, 'vref'");
-        if (keyParts.length == 0)
-          keyParts.push("assessment_id", 'vref');
+          throw new Error(
+            "Must have keyParts 'assessment_id' and at most additionally, but optionally, 'vref'",
+          );
+        if (keyParts.length === 0) keyParts.push('assessmentId', 'vref');
         return (item: Result) => {
-          //IF can't obtain key parts, raise Error
-          keyParts
-            .forEach(keyPart => {
-              if (item[keyPart as keyof Result] === undefined)
-                throw new Error(`Item '${JSON.stringify(item)}' does not contain property '${keyPart}'`);
-            });
-          if (keyParts.length == 2) {
-            let keyPartOne: string = item[keyParts[1] as keyof Result] as string;
+          // IF can't obtain key parts, raise Error
+          keyParts.forEach((keyPart) => {
+            // Verifying that all of the keyParts contain data
+            // eslint-disable-next-line no-type-assertion/no-type-assertion
+            if (item[keyPart as keyof Result] === undefined)
+              throw new Error(
+                `Item '${JSON.stringify(item)}' does not contain property '${keyPart}'`,
+              );
+          });
+          if (keyParts.length === 2) {
+            let keyPartOne: string = String(item[keyParts[1]]);
             if (keyPartOne.length > 3) {
               try {
                 keyPartOne = new VerseRef(keyPartOne).book;
-              } catch(e) {
-                console.debug(`Could not extract book using VerseRef from ${keyPartOne}: ${JSON.stringify(e)}. Trying split...`);
-                const parts = keyPartOne.split(" ");
-                if (parts.length === 2)
-                  keyPartOne = parts[0];
+              } catch (e) {
+                console.debug(
+                  `Could not extract book using VerseRef from ${keyPartOne}: ${JSON.stringify(e)}. Trying split...`,
+                );
+                const parts = keyPartOne.split(' ');
+                if (parts.length === 2) [keyPartOne] = parts;
                 else {
-                  const errorMessage =`Could not extract book using spit from ${keyPartOne}: ${JSON.stringify(e)}`;
+                  const errorMessage = `Could not extract book using spit from ${keyPartOne}: ${JSON.stringify(e)}`;
                   console.error(`${errorMessage}. Throwing error.`);
                   throw new Error(errorMessage);
                 }
               }
             }
-            console.debug(`${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${keyPartOne}__${info.valuesType}`);
-            return [
-              `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${keyPartOne}__${info.valuesType}`
-            ];
-          } else {
-            return Canon.allBookIds.map(book =>
-              `${info.keyPrefix}_${item[keyParts[0] as keyof Result] as string}__${book}__${info.valuesType}`
-            );
+            const retVal = `${info.keyPrefix}_${item[keyParts[0]]}__${keyPartOne}__${info.valuesType}`;
+            console.debug(retVal);
+            return [retVal];
           }
+          return Canon.allBookIds.map(
+            (book) => `${info.keyPrefix}_${item[keyParts[0]]}__${book}__${info.valuesType}`,
+          );
         };
       },
-      persist);
+      persist,
+    );
   }
 
   get uri() {
@@ -104,69 +111,72 @@ export class AquaService implements IAquaService {
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   get paramsToInclude() {
-    return this._paramsToInclude;
+    return this.paramsToIncludeInternal;
   }
 
   set paramsToInclude(value) {
-    this._paramsToInclude = value;
+    this.paramsToIncludeInternal = value;
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   get requester() {
-    return this._requester;
+    return this.requesterInternal;
   }
 
   set requester(value) {
-    this._requester = value;
+    this.requesterInternal = value;
   }
 
-  async getResults({assessment_id, book, aggregateByChapter}: ResultsSelector): Promise<[Result[], string]> {
-    try {
-      await this.keepGetAndSetCacheInSyncLock.promise; //wait for the lock
-      this.keepGetAndSetCacheInSyncLock.lock(); //once the lock is free, grab it.
-
-      let results: Result [] | undefined;
-      const info = {keyPrefix: 'assessment', valuesType: aggregateByChapter ? 'chapterresults' : 'verseresults'} as SelectorInfo;
+  async getResults({ assessmentId, book, aggregateByChapter }: ResultsSelector): Promise<Results> {
+    return this.keepGetAndSetCacheInSyncLock.runExclusive(async () => {
+      let results: Result[] | undefined;
+      const info: SelectorInfo = {
+        keyPrefix: 'assessment',
+        valuesType: aggregateByChapter ? 'chapterresults' : 'verseresults',
+      };
       if (this.cacheService) {
         if (book)
-          results = await this.cacheService.get(
-            info,
-            {assessment_id: assessment_id, vref: book.toString()} as Result)
+          results = await this.cacheService.get(info, {
+            assessmentId,
+            vref: book.toString(),
+          });
         else {
-          results = await this.cacheService.get(
-            info,
-            {assessment_id: assessment_id} as Result);
+          results = await this.cacheService.get(info, { assessmentId });
         }
       }
       if (!results) {
         if (book)
           if (!aggregateByChapter)
-            results = (await this._requester<{results: Result[]}>(
-              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}&include_text=true`,
-              this.paramsToInclude,
-            )).results;
+            results = (
+              await this.requesterInternal<{ results: Result[] }>(
+                `${this.baseUri}/${this.result}?assessment_id=${assessmentId}&book=${book}&include_text=true`,
+                this.paramsToInclude,
+              )
+            ).results;
           else
-            results = (await this._requester<{results: Result[]}>(
-              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&book=${book}&aggregate=chapter`,
+            results = (
+              await this.requesterInternal<{ results: Result[] }>(
+                `${this.baseUri}/${this.result}?assessment_id=${assessmentId}&book=${book}&aggregate=chapter`,
+                this.paramsToInclude,
+              )
+            ).results;
+        else if (!aggregateByChapter)
+          results = (
+            await this.requesterInternal<{ results: Result[] }>(
+              `${this.baseUri}/${this.result}?assessment_id=${assessmentId}`,
               this.paramsToInclude,
-            )).results;
+            )
+          ).results;
         else
-          if (!aggregateByChapter)
-            results = (await this._requester<{results: Result[]}>(
-              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}`,
+          results = (
+            await this.requesterInternal<{ results: Result[] }>(
+              `${this.baseUri}/${this.result}?assessment_id=${assessmentId}&aggregate=chapter`,
               this.paramsToInclude,
-            )).results;
-          else
-            results = (await this._requester<{results: Result[]}>(
-              `${this.baseUri}/${this.result}?assessment_id=${assessment_id}&aggregate=chapter`,
-              this.paramsToInclude,
-            )).results;
-        await this.cacheService?.set(
-          info,
-          results);
+            )
+          ).results;
+        await this.cacheService?.set(info, results);
       }
-      return [results, JSON.stringify({assessment_id, book, aggregateByChapter})];
-    } finally {
-      this.keepGetAndSetCacheInSyncLock.unlock();
-    }
+      return results;
+    });
   }
 }

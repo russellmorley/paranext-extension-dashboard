@@ -1,40 +1,31 @@
-import { useContext} from "react";
-import { DisplayFromTokensTextRowsComponent } from "./display.tokenstextrows.component";
-import { CurrentVerseContext } from "./currentverse.context";
-import { ChakraProvider } from '@chakra-ui/react'
-import { Card, CardHeader, CardBody, CardFooter } from '@chakra-ui/react'
-import { Text } from '@chakra-ui/react'
-import { CorpusInsightsTokensTextRowsDataContext } from "./corpusinsights.tokenstextrows.datacontext";
+import { ChakraProvider, Card, CardHeader, CardBody, CardFooter, Text } from '@chakra-ui/react';
+import { DisplayFromTokensTextRowsComponent } from './display.tokenstextrows.component';
+import { CorpusInsightsTokensTextRowsDataContext } from './corpusinsights.tokenstextrows.datacontext';
 
-type Visualization = {
-  header?: JSX.Element,
-  body: JSX.Element,
-  footer?: JSX.Element,
-}
-
+// eslint-disable-next-line import/prefer-default-export
 export function CorpusInsightsAppComponent() {
+  /*
   const verseRef = useContext(CurrentVerseContext);
 
-   return (
+  Removed verseRef from this line below because verseRef was removed from the data context
+              <CorpusInsightsTokensTextRowsDataContext verseRef={verseRef}>
+  */
+  return (
     <ChakraProvider>
+      <Card />
       <Card>
-      </ Card>
-      <Card>
-        <CardHeader>
-        </CardHeader>
+        <CardHeader />
         <CardBody>
-          <Text fontSize='2xl'>
-            <CorpusInsightsTokensTextRowsDataContext verseRef={verseRef}>
+          <Text fontSize="2xl">
+            <CorpusInsightsTokensTextRowsDataContext>
               <DisplayFromTokensTextRowsComponent />
             </CorpusInsightsTokensTextRowsDataContext>
           </Text>
         </CardBody>
         <CardFooter>
-          <Text fontSize='sm'>
-          (c) Biblica
-          </Text>
+          <Text fontSize="sm">(c) Biblica</Text>
         </CardFooter>
-      </ Card>
+      </Card>
     </ChakraProvider>
   );
 }

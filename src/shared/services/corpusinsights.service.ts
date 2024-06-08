@@ -1,28 +1,35 @@
-import { PaddedToken, Token, TokensTextRow, TokensTextRowsInfo } from "src/renderer/tokenstextrows.context"
-import { Requester } from "src/types/requester.type";
-import { CacheService, KeysSelector, SelectorInfo } from "./cache.service";
-import { AsyncLock } from "../utils/async-lock.util";
-import { IPersist } from "src/types/persist.type";
+import {
+  PaddedToken,
+  TokensTextRow,
+  TokensTextRowsInfo,
+} from 'src/renderer/tokenstextrows.context';
+import { Requester } from 'src/types/requester.type';
+// import { IPersist } from 'src/types/persist.type';
+// import { CacheService } from './cache.service';
 
 export class CorpusInsightsService {
   // endpoints
-  private readonly tokensTextRows: string = 'tokenstextrows';
+  // private readonly tokensTextRows: string = 'tokenstextrows';
 
   // configuration
   private baseUri: string;
-  private _paramsToInclude: Record<string, any>;
-  private _requester: Requester;
-  private cacheService: CacheService<TokensTextRow> | undefined;
-  //private keepGetAndSetCacheInSyncLock = new AsyncLock();
+  // TODO: Pick a better type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private paramsToIncludeInternal: Record<string, any>;
+  private requesterInternal: Requester;
+  // private cacheService: CacheService<TokensTextRow> | undefined;
 
   constructor(
     baseUri: string,
+    // TODO: Pick a better type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     paramsToInclude: Record<string, any>,
     requester: Requester,
-    persist: IPersist | undefined = undefined) {
-      this.baseUri = baseUri;
-      this._paramsToInclude = paramsToInclude;
-      this._requester = requester;
+    // persist: IPersist | undefined = undefined,
+  ) {
+    this.baseUri = baseUri;
+    this.paramsToIncludeInternal = paramsToInclude;
+    this.requesterInternal = requester;
   }
 
   get uri() {
@@ -35,31 +42,32 @@ export class CorpusInsightsService {
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   get paramsToInclude() {
-    return this._paramsToInclude;
+    return this.paramsToIncludeInternal;
   }
 
   set paramsToInclude(value) {
-    this._paramsToInclude = value;
+    this.paramsToIncludeInternal = value;
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   get requester() {
-    return this._requester;
+    return this.requesterInternal;
   }
 
   set requester(value) {
-    this._requester = value;
+    this.requesterInternal = value;
   }
 
-
+  // eslint-disable-next-line class-methods-use-this
   async getByVerseRange(
     tokenizedTextCorpusId: string,
     tokenizedTextCorpusName: string,
-    verseRef: string,
-    numberOfVersesInChapterBefore: number,
-    numberOfVersesInChapterAfter: number): Promise<TokensTextRowsInfo> {
-      try {
-        let tokensTextRows: TokensTextRow[] = await new Promise<TokensTextRow[]>((resolve) => {
-          const tokenTextRowsJson = `
+    // verseRef: string,
+    // numberOfVersesInChapterBefore: number,
+    // numberOfVersesInChapterAfter: number,
+  ): Promise<TokensTextRowsInfo> {
+    const tokensTextRows: TokensTextRow[] = await new Promise<TokensTextRow[]>((resolve) => {
+      const tokenTextRowsJson = `
           [
             {
               "ref": "GEN 1:1",
@@ -162,24 +170,60 @@ export class CorpusInsightsService {
              ]
             }
           ]`;
-          resolve(JSON
-            .parse(tokenTextRowsJson)
-              .map((tokensTextRowObject: { ref: any; tokens: { tokenId: { bookNumber: number; chapterNumber: number; verseNumber: number; wordNumber: number; subWordNumber: number; }; surfaceText: string; trainingText: string; position: number; surfaceTextPrefix: string; surfaceTextSuffix: string; paddingBefore: string; paddingAfter: string; }[]; }) =>
-                new TokensTextRow({ref: tokensTextRowObject.ref, tokens: tokensTextRowObject.tokens
-                  .map((tokenObject: { tokenId: { bookNumber: number; chapterNumber: number; verseNumber: number; wordNumber: number; subWordNumber: number; }; surfaceText: string; trainingText: string; position: number; surfaceTextPrefix: string; surfaceTextSuffix: string; paddingBefore: string; paddingAfter: string; }) =>
-                    new PaddedToken(tokenObject)
-                  )
-                })
-              ));
-        });
-        // await this._requester<TokensTextRow[]>(
-        //   `${this.baseUri}/${this.tokensTextRows}?tokenizedTextCorpusId=${tokenizedtextcorpus_id}&verseref=${verseRef}&versesbeforenumber=${}&versesafternumber=${numberOfVersesInChapterAfter}`,
-        //   this.paramsToInclude);
-        return {
-          corpusId: tokenizedTextCorpusId,
-          corpusName: tokenizedTextCorpusName? tokenizedTextCorpusName : '<corpus name not set',
-          tokensTextRows: tokensTextRows};
-      } finally {
-      }
-   }
+      resolve(
+        JSON.parse(tokenTextRowsJson).map(
+          (tokensTextRowObject: {
+            // TODO: Pick a better type
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ref: any;
+            tokens: {
+              tokenId: {
+                bookNumber: number;
+                chapterNumber: number;
+                verseNumber: number;
+                wordNumber: number;
+                subWordNumber: number;
+              };
+              surfaceText: string;
+              trainingText: string;
+              position: number;
+              surfaceTextPrefix: string;
+              surfaceTextSuffix: string;
+              paddingBefore: string;
+              paddingAfter: string;
+            }[];
+          }) =>
+            new TokensTextRow({
+              ref: tokensTextRowObject.ref,
+              tokens: tokensTextRowObject.tokens.map(
+                (tokenObject: {
+                  tokenId: {
+                    bookNumber: number;
+                    chapterNumber: number;
+                    verseNumber: number;
+                    wordNumber: number;
+                    subWordNumber: number;
+                  };
+                  surfaceText: string;
+                  trainingText: string;
+                  position: number;
+                  surfaceTextPrefix: string;
+                  surfaceTextSuffix: string;
+                  paddingBefore: string;
+                  paddingAfter: string;
+                }) => new PaddedToken(tokenObject),
+              ),
+            }),
+        ),
+      );
+    });
+    // await this._requester<TokensTextRow[]>(
+    //   `${this.baseUri}/${this.tokensTextRows}?tokenizedTextCorpusId=${tokenizedtextcorpus_id}&verseref=${verseRef}&versesbeforenumber=${}&versesafternumber=${numberOfVersesInChapterAfter}`,
+    //   this.paramsToInclude);
+    return {
+      corpusId: tokenizedTextCorpusId,
+      corpusName: tokenizedTextCorpusName || '<corpus name not set',
+      tokensTextRows,
+    };
+  }
 }

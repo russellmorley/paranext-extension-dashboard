@@ -11,7 +11,7 @@ $thumb-size: 16px;
   pointer-events: all;
   width: $thumb-size;
   height: $thumb-size;
-  border-radius: 0px;
+  border-radius: 0;
   border: 0 none;
   cursor: grab;
   background-color: red;
@@ -61,13 +61,13 @@ $thumb-size: 16px;
   &::-webkit-slider-thumb {
     @include thumb-styles;
   }
-};
+}
 
 .wrapper {
   position: relative;
   display: flex;
   align-items: center;
-  margin: 0px calc(#{$thumb-size} / 2);
+  margin: 0 calc(#{$thumb-size} / 2);
   padding-top: 0;
   height: calc(#{$thumb-size} + 1.6rem);
 }
@@ -100,21 +100,19 @@ $thumb-size: 16px;
   background: lightgrey;
 }
 
-.left-track{
+.left-track {
   position: absolute;
   height: 100%;
   background: blue;
   // opacity: 0.5;
 }
 
-.right-track{
+.right-track {
   position: absolute;
   height: 100%;
   background: blue;
   // opacity: 0.5;
 }
-
-
 
 .bubble-mean {
   background: blue;
@@ -128,7 +126,7 @@ $thumb-size: 16px;
 }
 
 .bubble-mean::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 2px;
   height: 2px;
@@ -149,7 +147,7 @@ $thumb-size: 16px;
 }
 
 .bubble-thumb-left::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 2px;
   height: 2px;
@@ -170,7 +168,7 @@ $thumb-size: 16px;
 }
 
 .bubble-thumb-right::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 2px;
   height: 2px;
@@ -192,7 +190,7 @@ $thumb-size: 16px;
 }
 
 .bubble-min::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 2px;
   height: 2px;
@@ -207,7 +205,7 @@ $thumb-size: 16px;
   padding: 4px 12px;
   position: absolute;
   border-radius: 4px;
-  right: 0px;
+  right: 0;
 
   //left: 50%;
   margin-right: 8px;
@@ -216,7 +214,7 @@ $thumb-size: 16px;
 }
 
 .bubble-max::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 2px;
   height: 2px;

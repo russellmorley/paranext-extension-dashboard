@@ -1,57 +1,67 @@
-import { PropsWithChildren, useEffect, useState } from "react";
-import { PaddedToken, TokensTextRow, TokensTextRowsInfoContext } from "./tokenstextrows.context";
-import { VerseRef } from "@sillsdev/scripture";
+import { PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { VerseRef } from '@sillsdev/scripture';
+import { PaddedToken, TokensTextRow, TokensTextRowsInfoContext } from './tokenstextrows.context';
 
 export type VerseText = {
-  verseRef: string,
-  text: string
+  verseRef: string;
+  text: string;
 };
 
 export type AquaTokensTextRowsDataContextParams = {
-  corpusId: string,
-  corpusName: string,
+  corpusId: string;
+  corpusName: string;
   verseTexts: VerseText[];
-}
+};
 
-export function AquaTokenTextRowsDataContext({ children, corpusId, corpusName, verseTexts } : PropsWithChildren<AquaTokensTextRowsDataContextParams>) {
-  const [tokensTextRows, setTokensTextRows] = useState([] as TokensTextRow[]);
+export function AquaTokenTextRowsDataContext({
+  children,
+  corpusId,
+  corpusName,
+  verseTexts,
+}: PropsWithChildren<AquaTokensTextRowsDataContextParams>) {
+  const [tokensTextRows, setTokensTextRows] = useState<TokensTextRow[]>([]);
 
-  const getTokensTextRows = (verseTexts: VerseText[]): TokensTextRow[] =>
-    verseTexts.map(verseText => {
+  const getTokensTextRows = (verseTextArray: VerseText[]): TokensTextRow[] =>
+    verseTextArray.map((verseText) => {
       const vRef = new VerseRef(verseText.verseRef);
       let wordNumber = 0;
       return new TokensTextRow({
         ref: verseText.verseRef,
-        tokens: verseText.text.split(" ").map(tokenText => {
-          wordNumber = wordNumber + 1;
+        tokens: verseText.text.split(' ').map((tokenText) => {
+          wordNumber += 1;
           return new PaddedToken({
             tokenId: {
               bookNumber: vRef.bookNum,
               chapterNumber: vRef.chapterNum,
               verseNumber: vRef.verseNum,
-              wordNumber: wordNumber,
-              subWordNumber: 1},
+              wordNumber,
+              subWordNumber: 1,
+            },
             surfaceText: tokenText,
             trainingText: tokenText,
             position: wordNumber,
             surfaceTextPrefix: '',
             surfaceTextSuffix: '',
             paddingBefore: '',
-            paddingAfter: ' '})
-        })
+            paddingAfter: ' ',
+          });
+        }),
       });
     });
 
-useEffect(
-  () => setTokensTextRows(getTokensTextRows(verseTexts)),
-  [verseTexts]
-);
+  useEffect(() => setTokensTextRows(getTokensTextRows(verseTexts)), [verseTexts]);
 
   return (
-    <>
-      <TokensTextRowsInfoContext.Provider value={{corpusId: corpusId, corpusName: corpusName, tokensTextRows: tokensTextRows}}>
-        {children}
-      </TokensTextRowsInfoContext.Provider>
-    </>
+    <TokensTextRowsInfoContext.Provider
+      value={useMemo(() => {
+        return {
+          corpusId,
+          corpusName,
+          tokensTextRows,
+        };
+      }, [corpusId, corpusName, tokensTextRows])}
+    >
+      {children}
+    </TokensTextRowsInfoContext.Provider>
   );
 }

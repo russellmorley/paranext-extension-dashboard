@@ -1,17 +1,20 @@
 import { DataProviderEngine } from '@papi/backend';
 import { ExecutionToken, IDataProviderEngine } from '@papi/core';
-import { DataProviderSetter } from 'shared/models/data-provider.model';
 import { AquaService, IAquaService } from 'src/shared/services/aqua.service';
-import type { AquaDataTypes, Result, Results, ResultsSelector } from 'paranext-extension-dashboard';
+import type { AquaDataTypes, Results, ResultsSelector } from 'paranext-extension-dashboard';
+import { UnsubscriberAsync } from 'platform-bible-utils';
 import { ExtensionStoragePersist } from '../services/extension-storage.persist.service';
 import { httpPapiBackRequester } from '../utils/http.papiback.requester.util';
-import { UnsubscriberAsync } from 'platform-bible-utils';
 
 export class AquaDataProviderEngine
   extends DataProviderEngine<AquaDataTypes>
   implements IDataProviderEngine<AquaDataTypes>, IAquaService
 {
   aquaService: AquaService;
+
+  dispose?: UnsubscriberAsync | undefined;
+
+  onDidDispose?: undefined;
 
   constructor(token: ExecutionToken, prefix: string) {
     super();
@@ -31,13 +34,13 @@ export class AquaDataProviderEngine
     );
   }
 
-  async getResults({ assessment_id, book }: ResultsSelector): Promise<Result[]> {
-    return (await this.aquaService.getResults({ assessment_id, book })) as Results;
+  async getResults({ assessmentId, book, aggregateByChapter }: ResultsSelector): Promise<Results> {
+    const results = await this.aquaService.getResults({ assessmentId, book, aggregateByChapter });
+    return results;
   }
 
-  dispose?: UnsubscriberAsync | undefined;
-
-  onDidDispose?: undefined;
-
-  setResults: DataProviderSetter<AquaDataTypes, 'Results'> = async () => false;
+  // eslint-disable-next-line class-methods-use-this
+  async setResults() {
+    return false;
+  }
 }

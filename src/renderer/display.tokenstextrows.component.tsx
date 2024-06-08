@@ -1,18 +1,19 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { TokensTextRowsInfoContext } from './tokenstextrows.context';
-import { TokenDisplayComponent } from './tokendisplay.component';
-import papi from '@papi/frontend';
+import { useContext, useState } from 'react';
+import papi, { logger } from '@papi/frontend';
 import { TextInsight, TokenInfo } from 'src/shared/services/textinsights.service';
-import { useEvent } from 'platform-bible-react';
-import { DisplayFromTextInsights } from './display.textinsights.component';
+// import { useEvent } from 'platform-bible-react';
 import { useDisclosure } from '@chakra-ui/react';
+import { DisplayFromTextInsights } from './display.textinsights.component';
+import { TokenDisplayComponent } from './tokendisplay.component';
+import { TokensTextRowsInfoContext } from './tokenstextrows.context';
 
+// eslint-disable-next-line import/prefer-default-export
 export function DisplayFromTokensTextRowsComponent() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const tokensTextRowsInfo = useContext(TokensTextRowsInfoContext);
-  const [textInsightsOpen, setTextInsightsOpen] = useState(false);
-  const [textInsights, setTextInsights] = useState([] as TextInsight[]);
-  const [textInsightsGetComplete, setInsightsGetComplete] = useState(false);
+  const [, setTextInsightsOpen] = useState(false);
+  const [textInsights, setTextInsights] = useState<TextInsight[]>([]);
+  const [textInsightsGetComplete] = useState(false);
 
   const display = tokensTextRowsInfo.tokensTextRows.map((tokensTextRow) => (
     <li key={tokensTextRow.ref} style={{ listStyleType: 'none' }}>
@@ -31,6 +32,7 @@ export function DisplayFromTokensTextRowsComponent() {
     </li>
   ));
 
+  /*
   useEvent<TextInsight>(
     'textinsights.get',
     useCallback(
@@ -49,6 +51,7 @@ export function DisplayFromTokensTextRowsComponent() {
       setInsightsGetComplete(true);
     }, []),
   );
+  */
 
   const onMouseUp = async () => {
     const selection = window.getSelection();
@@ -63,13 +66,15 @@ export function DisplayFromTokensTextRowsComponent() {
       focusDataLocElement?.parentElement?.dataset.ref !==
         anchorDataLocElement?.parentElement?.dataset.ref
     ) {
-      console.debug('refs of anchor or focus is undefined or not equal. returning.');
+      logger.debug('refs of anchor or focus is undefined or not equal. returning.');
       return;
     }
     const dataRefElement = focusDataLocElement?.parentElement;
 
     let found = false;
     for (let i = 0; i < dataRefElement.children.length; i++) {
+      // Not sure if this is OK
+      // eslint-disable-next-line no-type-assertion/no-type-assertion
       const locElement = dataRefElement.children.item(i) as HTMLElement;
       if (
         locElement.dataset.loc === focusDataLocElement.dataset.loc ||
@@ -84,22 +89,22 @@ export function DisplayFromTokensTextRowsComponent() {
         )
           found = false;
         let text: string = '';
-        locElement.childNodes.forEach(
-          (child) =>
-            (text = `${text}${child.childNodes.length > 0 ? child.childNodes[0].nodeValue : ''}`),
-        );
-        if (text.length > 0)
-          selectedTokenInfos.push({ location: locElement.dataset.loc, text: text });
+        locElement.childNodes.forEach((child) => {
+          text = `${text}${child.childNodes.length > 0 ? child.childNodes[0].nodeValue : ''}`;
+        });
+        if (text.length > 0) selectedTokenInfos.push({ location: locElement.dataset.loc, text });
         if (focusDataLocElement.dataset.loc === anchorDataLocElement.dataset.loc) break;
       }
     }
-    console.debug(JSON.stringify(selectedTokenInfos));
-    setTextInsights([] as TextInsight[]);
+    logger.debug(JSON.stringify(selectedTokenInfos));
+    setTextInsights([]);
     onOpen();
     setTextInsightsOpen(true);
-    const result = await papi.commands.sendCommand('textinsights.get', selectedTokenInfos);
+    await papi.commands.sendCommand('textinsights.get', selectedTokenInfos);
   };
 
+  // No idea if this is OK
+  /* eslint-disable jsx-a11y/no-static-element-interactions */
   return (
     <>
       <div>
@@ -114,7 +119,8 @@ export function DisplayFromTokensTextRowsComponent() {
         isOpen={isOpen}
         onClose={onClose}
         allTextInsightsIncluded={textInsightsGetComplete}
-      ></DisplayFromTextInsights>
+      />
     </>
   );
+  /* eslint-enable jsx-a11y/no-static-element-interactions */
 }

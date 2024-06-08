@@ -3,16 +3,20 @@ declare module 'paranext-extension-dashboard' {
 
   export type Results = Result[];
 
-  export type ResultsSelector = {assessment_id: number, book?: string, aggregateByChapter?: boolean};
+  export type ResultsSelector = {
+    assessmentId: number;
+    book?: string;
+    aggregateByChapter?: boolean;
+  };
 
   export type Result = {
     id?: number;
-    assessment_id?: number;
+    assessmentId?: number;
     vref?: string;
     source?: string;
     target?: string;
-    revision_text?: string;
-    reference_text?: string;
+    revisionText?: string;
+    referenceText?: string;
     score?: number;
     flag?: boolean;
     type?: string;
@@ -21,11 +25,9 @@ declare module 'paranext-extension-dashboard' {
 
   export type AquaDataTypes = {
     // Result: DataProviderDataType<Result>;
-    Results: DataProviderDataType<ResultsSelector, Results, void>
-  }
+    Results: DataProviderDataType<ResultsSelector, Results, void>;
+  };
   export type AquaDataProvider = IDataProvider<AquaDataTypes>;
-
-
 
   export type ExtensionVerseSetData = string | { text: string; isHeresy: boolean };
 
@@ -62,11 +64,17 @@ declare module 'paranext-extension-dashboard' {
 declare module 'papi-shared-types' {
   import type { AquaDataProvider, ExtensionVerseDataProvider } from 'paranext-extension-dashboard';
 
+  import type { TokenInfo } from 'src/shared/services/textinsights.service';
+
   export interface CommandHandlers {
     'extensionTemplateHelloWorld.doStuff': (message: string) => {
       response: string;
       occurrence: number;
     };
+    'platform.paranextVerseChange': (verseRefString: string, verseOffsetIncluded: number) => void;
+    'platform.dashboardVerseChange': (verseRefString: string, verseOffsetIncluded: number) => void;
+    'platform.dashboardServiceRequest': (request: string) => Promise<string>;
+    'textinsights.get': (tokenInfos: TokenInfo[]) => void;
   }
 
   export interface DataProviders {

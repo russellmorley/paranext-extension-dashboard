@@ -1,12 +1,13 @@
-import papi, { logger } from '@papi/frontend';
-import { useEvent } from 'platform-bible-react';
-import { useCallback } from 'react';
-import type { ParanextVerseChangeEvent } from 'paranext-extension-dashboard';
+// import papi from '@papi/frontend';
+// import { useEvent } from 'platform-bible-react';
+// import { useCallback } from 'react';
+// import type { ParanextVerseChangeEvent } from 'paranext-extension-dashboard';
 
 globalThis.webViewComponent = function DashboardIntegration() {
+  /*
   useEvent<ParanextVerseChangeEvent>(
     'platform.paranextVerseChange',
-    useCallback(async ({ verseRefString, verseOffsetIncluded }) => {
+    useCallback(async ({ verseRefString }) => {
       // eslint-disable-next-line no-undef
       await CefSharp.BindObjectAsync('dashboardAsync');
       // eslint-disable-next-line no-undef
@@ -25,7 +26,7 @@ globalThis.webViewComponent = function DashboardIntegration() {
   const doDashboardVerseChangePromise = papi.commands.registerCommand(
     'platform.dashboardServiceRequest',
     async (request: string): Promise<string> => {
-      logger.info(`DashboardServiceRequest: ${request}`);
+      console.info(`DashboardServiceRequest: ${request}`);
 
       await CefSharp.BindObjectAsync('dashboardAsync');
       // eslint-disable-next-line no-undef
@@ -50,6 +51,7 @@ globalThis.webViewComponent = function DashboardIntegration() {
       // return responsePromise;
     },
   );
+  */
 
   // useEffect(() => {
   //   async function setup() {
