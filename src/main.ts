@@ -123,7 +123,8 @@ export async function activate(context: ExecutionActivationContext) {
 
   papi.webViews.getWebView(dashboardIntegrationWebViewType, undefined, {existingId: '?'});
   papi.webViews.getWebView(aquaWebViewType, undefined, {existingId: '?'});
-
+  papi.webViews.getWebView(corpusInsightsWebViewType, undefined, {existingId: '?'});
+  
   // Await the data provider promise at the end so we don't hold everything else up
   context.registrations.add(
     await aquaDataProviderPromise,

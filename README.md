@@ -138,6 +138,8 @@ As a part of a single page app web portal that directly interacts with AQuA's ma
 4. `cd paranext-core` and then `git checkout dashboard` (Switch to the 'dashboard' branch)
 5. follow [instructions in readme](https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install), including
 running `npm install`.
+6. Set the generative model keys in src/shared/services/textinsights.service.ts lines 51, 80, and 128 for 
+deep-translate1.p.rapidapi.com detect, translate, and ChatGPT, respectively.
 
   #### To package for production
 
@@ -156,6 +158,8 @@ To package your extension into a zip file for distribution:
 4. `cd paranext-core` and then `git checkout dashboard` (Switch to the 'dashboard' branch)
 5. follow [instructions in readme](https://github.com/paranext/paranext-core?tab=readme-ov-file#developer-install), including
 running `npm install`.
+6. Set the generative model keys in src/shared/services/textinsights.service/ts lines 51, 80, and 128 for 
+deep-translate1.p.rapidapi.com detect, translate, and ChatGPT, respectively.
 
   ### Browser Apps
 
@@ -179,9 +183,8 @@ Execute `npm start` in the base directory in which you installed this repository
   ### Test in browser
 
 1.  change directory to `paranext-extension-dashboard` from your parent repo directory (the directory that contains both `paranext-extension-dashboard` and `paranext-core`).
-2. edit `src/shared/services/textinsights.service.ts` line 290, replacing Bearer [TOKEN..] 
-3. `npm run start:PAPI-standalone`
-4. Navigate browser:
+2. `npm run start:PAPI-standalone`
+3. Navigate browser:
     1. Open a browser tab and navigate to http://localhost:1212/aqua_webview?assessment_id=211&version_id=71 to view the AQuA web app.
     2. Open another browser tab and navigate to http://localhost:1212/corpusinsights_webview?tokenizedtextcorpus_id=32&verseref=GEN%201%3A4&versesbeforenumber=0&versesafternumber=0 to view the tokenized corpus webview.
 
