@@ -1,0 +1,14 @@
+{
+  "name": "paranextExtensionDashboard",
+  "version": "0.0.1",
+  "displayData": "contributions/displayData.json",
+  "author": "Paranext",
+  "license": "MIT",
+  "main": "src/main.ts",
+  "types": "src/types/paranext-extension-dashboard.d.ts",
+  "menus": "contributions/menus.json",
+  "settings": "contributions/settings.json",
+  "projectSettings": "contributions/projectSettings.json",
+  "localizedStrings": "contributions/localizedStrings.json",
+  "activationEvents": []
+}

@@ -1,4 +1,4 @@
-import {registerGetTextInsightsCommand} from 'src/extension-host/commands/textinsights.command'; // register the text insights service
+import { registerGetTextInsightsCommand } from 'src/extension-host/commands/textinsights.command'; // register the text insights service
 import papi, { logger, DataProviderEngine } from '@papi/backend';
 import {
   ExecutionActivationContext,
@@ -9,7 +9,6 @@ import {
 import type {
   DashboardVerseChangeEvent,
   ParanextVerseChangeEvent,
-
 } from 'paranext-extension-dashboard';
 
 import dashboardIntegrationWebview from './renderer/dashboard-integration.web-view?inline';
@@ -18,7 +17,6 @@ import aquaWebViewStyles from './renderer/aqua.web-view.scss?inline';
 import corpusInsightsWebView from './renderer/corpusinsights.web-view?inline';
 import corpusInsightsWebViewStyles from './renderer/corpusinsights.web-view.scss?inline';
 import { AquaDataProviderEngine } from './extension-host/dataproviders/aqua.dataprovider';
-
 
 const dashboardIntegrationWebViewType = 'dashboardintegration.webview';
 const dashboardIntegrationWebViewProvider: IWebViewProvider = {
@@ -68,10 +66,13 @@ const corpusInsightsWebViewProvider: IWebViewProvider = {
 };
 
 export async function activate(context: ExecutionActivationContext) {
-  const aquaDataProviderEngine = new AquaDataProviderEngine(context.executionToken, 'aquadataproviderengine');
+  const aquaDataProviderEngine = new AquaDataProviderEngine(
+    context.executionToken,
+    'aquadataproviderengine',
+  );
   const aquaDataProviderPromise = papi.dataProviders.registerEngine(
     'aqua.results',
-    aquaDataProviderEngine
+    aquaDataProviderEngine,
   );
 
   const dashboardIntegrationWebViewProviderPromise = papi.webViewProviders.register(
@@ -90,9 +91,11 @@ export async function activate(context: ExecutionActivationContext) {
   );
 
   const onDashboardVerseChangeEmitter =
-    papi.network.createNetworkEventEmitter<DashboardVerseChangeEvent>('platform.dashboardVerseChange');
+    papi.network.createNetworkEventEmitter<DashboardVerseChangeEvent>(
+      'platform.dashboardVerseChange',
+    );
 
-    const doDashboardVerseChangePromise = papi.commands.registerCommand(
+  const doDashboardVerseChangePromise = papi.commands.registerCommand(
     'platform.dashboardVerseChange',
     (verseRefString: string, verseOffsetIncluded: number) => {
       logger.info(`DashboardVerseRef: ${verseRefString}; offset: ${verseOffsetIncluded}`);
@@ -105,7 +108,9 @@ export async function activate(context: ExecutionActivationContext) {
   );
 
   const onParanextVerseChangeEmitter =
-    papi.network.createNetworkEventEmitter<ParanextVerseChangeEvent>('platform.paranextVerseChange');
+    papi.network.createNetworkEventEmitter<ParanextVerseChangeEvent>(
+      'platform.paranextVerseChange',
+    );
 
   const doParanextVerseChangePromise = papi.commands.registerCommand(
     'platform.paranextVerseChange',
@@ -121,8 +126,8 @@ export async function activate(context: ExecutionActivationContext) {
 
   const registerGetTextInsightsPromise = registerGetTextInsightsCommand();
 
-  papi.webViews.getWebView(dashboardIntegrationWebViewType, undefined, {existingId: '?'});
-  papi.webViews.getWebView(aquaWebViewType, undefined, {existingId: '?'});
+  papi.webViews.getWebView(dashboardIntegrationWebViewType, undefined, { existingId: '?' });
+  papi.webViews.getWebView(aquaWebViewType, undefined, { existingId: '?' });
 
   // Await the data provider promise at the end so we don't hold everything else up
   context.registrations.add(
@@ -136,7 +141,7 @@ export async function activate(context: ExecutionActivationContext) {
     onParanextVerseChangeEmitter,
     await doDashboardVerseChangePromise,
     await doParanextVerseChangePromise,
-    await registerGetTextInsightsPromise
+    await registerGetTextInsightsPromise,
   );
 }
 
