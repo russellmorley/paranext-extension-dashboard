@@ -29,7 +29,7 @@
   },
   "browserslist": [],
   "peerDependencies": {
-    "@sillsdev/scripture": "^1.4.0",
+    "@sillsdev/scripture": "^1.4.3",
     "react": ">=18.2.0",
     "react-dom": ">=18.2.0"
   },
@@ -82,6 +82,7 @@
     "@emotion/styled": "^11.11.0",
     "apexcharts": "^3.45.2",
     "framer-motion": "^11.0.14",
+    "platform-bible-utils": "file:../paranext-core/lib/platform-bible-utils",
     "react-apexcharts": "^1.4.1"
   }
 }
