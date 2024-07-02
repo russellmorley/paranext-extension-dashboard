@@ -60,6 +60,7 @@
     "glob": "^10.3.3",
     "papi-components": "file:../paranext-core/lib/papi-components",
     "papi-dts": "file:../paranext-core/lib/papi-dts",
+    "platform-bible-react": "file:../paranext-core/lib/platform-bible-react",
     "prettier": "^2.8.8",
     "sass": "^1.66.1",
     "sass-loader": "^13.3.2",

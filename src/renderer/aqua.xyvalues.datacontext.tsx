@@ -9,6 +9,7 @@ import { EnvironmentContext } from './environment.context';
 import { AquaMode, AquaStateManager, AquaStatePosition } from './aqua.statemanager';
 import { Canon } from '@sillsdev/scripture';
 import { Spinner } from '@chakra-ui/react';
+import { Setting } from '../../../paranext-core/lib/platform-bible-utils/dist';
 
 export type NameType = "books" | "chapters";
 export type XType = "chapters" | "verses";
@@ -51,10 +52,17 @@ export function AquaXYValuesDataContext({ children, stateManager } : PropsWithCh
   class SettingsWebviewState {
     assessment_id: string | undefined;
     version_id: string | undefined;
+
+    constructor(init?: SettingsWebviewState) {
+      Object.assign(this, init);
+    }
   }
- const settings = window.getWebViewState<SettingsWebviewState>('_settings');
-  if (!settings)
-    return undefined;
+ const settings = window.getWebViewState<SettingsWebviewState>(
+    '_settings', 
+    new SettingsWebviewState({assessment_id: '211', version_id: '71'}));
+
+  // if (!settings)
+  //   return undefined;
   const assessmentId = settings.assessment_id;
   const versionId = settings.version_id;
   if (!assessmentId || !versionId)

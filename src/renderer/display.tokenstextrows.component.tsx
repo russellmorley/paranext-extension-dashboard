@@ -3,7 +3,7 @@ import { TokensTextRowsInfoContext } from "./tokenstextrows.context";
 import { TokenDisplayComponent } from "./tokendisplay.component";
 import papi from "@papi/frontend";
 import { TextInsight, TokenInfo } from "src/shared/services/textinsights.service";
-import { useEvent } from "@papi/frontend/react";
+import { useEvent } from "platform-bible-react";
 import { DisplayFromTextInsights } from "./display.textinsights.component";
 import { useDisclosure } from "@chakra-ui/react";
 
@@ -31,7 +31,7 @@ export function DisplayFromTokensTextRowsComponent() {
   );
 
   useEvent<TextInsight>(
-    'textinsights.get',
+    papi.network.getNetworkEvent('textinsights.get'),
       useCallback(async (textInsight: TextInsight) => {
         console.debug(`Received text insight ${JSON.stringify(textInsight)}`);
         setTextInsights(textInsights.concat(textInsight));
@@ -39,7 +39,7 @@ export function DisplayFromTokensTextRowsComponent() {
   );
 
   useEvent<TextInsight>(
-    'textinsights.getcomplete',
+    papi.network.getNetworkEvent('textinsights.getcomplete'),
       useCallback(() => {
         console.debug(`Received all text insights complete`);
         setInsightsGetComplete(true);

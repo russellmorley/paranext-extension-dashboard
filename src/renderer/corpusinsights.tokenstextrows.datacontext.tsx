@@ -34,10 +34,22 @@ export function CorpusInsightsTokensTextRowsDataContext({ children, verseRef } :
     tokenizedtextcorpus_name: string | undefined;
     versesbeforenumber: string | undefined;
     versesafternumber: string | undefined;
+    
+    constructor(init?: Partial<SettingsWebviewState>) {
+      Object.assign(this, init);
+    }
   }
- const settings = window.getWebViewState<SettingsWebviewState>('_settings');
-  if (!settings)
-    return undefined;
+  const settings = window.getWebViewState<SettingsWebviewState>(
+    '_settings',
+    new SettingsWebviewState({
+      tokenizedtextcorpus_id: '32',
+      tokenizedtextcorpus_name: 'ERV-AR',
+      versesbeforenumber: '0',
+      versesafternumber: '0',
+    }));
+  // if (!settings)
+  //   return undefined;
+  
   const tokenizedTextCorpusId = settings.tokenizedtextcorpus_id;
   const tokenizedTextCorpusName = settings.tokenizedtextcorpus_name ? settings.tokenizedtextcorpus_name : '<not set>';
   const versesBefore = settings.versesbeforenumber;
